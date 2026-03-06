@@ -9,8 +9,10 @@ import ProtectedRoute    from './component/ProtectedRoute';
 import AdminRoute        from './component/AdminRoute';
 import RoleRoute         from './component/RoleRoute';
 import Home              from './pages/Home'; // Correct default import
-import { Calculetor }    from './pages/Calculetor';
+import { Calculator }    from './pages/Calculator';
 import { Profile }       from './pages/Profile';
+import { Aifull } from './pages/Aifull';
+import AdminDashboard from './pages/Admindashboard'
 
 function App() {
   return (
@@ -24,12 +26,16 @@ function App() {
           <Route path="/login"       element={<Login />} />
           <Route path="/register"    element={<Register />} />
           <Route path="/registerType" element={<RegisterType />} />
-          <Route path="/calculetor"  element={<Calculetor />} />
+          <Route path="/calculator"  element={<Calculator />} />
           
           {/* Role-based Profile Route */}
           <Route path="/profile" element={<RoleRoute role="customer"><Profile /></RoleRoute>} />
 
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/Ai" element={<ProtectedRoute><Aifull /></ProtectedRoute>} />
+               <Route path="/admin"
+            element={<AdminRoute><AdminDashboard /></AdminRoute>}
+          />
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>

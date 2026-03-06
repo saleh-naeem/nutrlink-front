@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
 import FilterBar from '../component/FilterBar';
 import NutritionistCard from '../component/NutritionistCard';
+import { Aibot } from '../component/aibot';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -90,6 +91,7 @@ const Home = () => {
     <div className="home-page">
       {/* Navbar */}
       <nav className="navbar">
+        <Aibot></Aibot>
         <div className="navbar-content">
           <Link to="/" className="brand">
             <div className="brand-icon">N</div>
