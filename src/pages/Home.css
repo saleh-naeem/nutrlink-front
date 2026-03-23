@@ -188,25 +188,10 @@
    FEATURED SECTION (CAROUSEL)
    ══════════════════════════════════════════════════════════ */
 
-.featured-section {
-  padding: 40px 20px;
-  background: #f9f9f9;
-}
 
-.section-header {
-  max-width: 1400px;
-  margin: 0 auto 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-.section-title {
-font-size: 2rem;
-  color: #1f2937;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
+
+
 
 .carousel-controls {
   display: flex;
@@ -314,7 +299,7 @@ font-size: 2rem;
 
 .features-section {
   padding: 80px 40px;
-  background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+  background-color: white;
   text-align: center;
 }
 
