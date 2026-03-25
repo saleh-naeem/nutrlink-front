@@ -2,10 +2,10 @@ import Navbar from "../component/Navbar";
 import FormField from "../component/FormField";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { creatProfile } from "../api/customerapi";
+import { createProfile } from "../api/customerapi";
 import "./createProfile.css";
 
-export const CreatProfile = () => {
+export const CreateProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,7 +25,7 @@ export const CreatProfile = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await creatProfile(formData);
+      const result = await createProfile(formData);
       console.log(result);
       alert("Profile saved successfully");
       navigate("/profile");

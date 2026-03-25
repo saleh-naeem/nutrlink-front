@@ -16,7 +16,7 @@ api.interceptors.request.use((config) => {
 
 
 // create profile
-export async function creatProfile(info) {
+export async function createProfile(info) {
   const { specialization, bio, cardBio, yearsOfExperience, languages, price } = info;
 
   try {

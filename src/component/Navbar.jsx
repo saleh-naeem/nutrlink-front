@@ -1,39 +1,36 @@
-import { Link } from 'react-router-dom';
-import './Navbar.css';
+import { useState, useEffect, useRef, useContext } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { NutrlinkLogo } from './Icons';
-import { useState, useEffect, useRef } from 'react';
+import { AuthContext } from '../AuthContext';
+import './Navbar.css';
 
-const Navbar = ({ isLogin, user, onLogout }) => {
+const Navbar = () => {
+  const { isLogin, user, handleLogout } = useContext(AuthContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+  const menuRef = useRef(null);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // If the menu is open AND the click happened outside the menuRef
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
 
-// Inside your Navbar component:
-const menuRef = useRef(null);
+    // Add the listener to the whole document
+    document.addEventListener("mousedown", handleClickOutside);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    // If the menu is open AND the click happened outside the menuRef
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
-      setIsMenuOpen(false);
-    }
-  };
-
-  // Add the listener to the whole document
-  document.addEventListener("mousedown", handleClickOutside);
-
-  // Cleanup: Remove the listener when the component unmounts
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, []);
+    // Cleanup: Remove the listener when the component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // 1. Data Definition: The "Source of Truth"
   const NAV_MAP = [
     { label: 'Home', to: '/', isPublic: true },
-    { label: 'Dashboard', to: '/dashboard', isPublic: false },
-    // { label: 'Profile', to: '/profile', isPublic: false },
+    { label: 'Dashboard', to: user?.role === 'nutritionist' ? '/Ndashboard' : '/dashboard', isPublic: false },
     { label: 'Calculator', to: '/calculator', isPublic: true },
   ];
 
@@ -54,7 +51,11 @@ useEffect(() => {
         <ul className="navbar__links">
           {visibleLinks.map((link) => (
             <li key={link.to}>
-              <Link to={link.to}>{link.label}</Link>
+              <NavLink to={link.to} end={Link.to === '/'}
+                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              >
+                {link.label}
+              </NavLink>
             </li>
           ))}
         </ul>
@@ -78,15 +79,21 @@ useEffect(() => {
                         <span className='navbar__username'>{user?.username}</span>
                         <span className="navbar__email">{user?.email}</span>
                       </div>
-                      <Link to="/profile" className="navbar__manage-profile">Manage your profile</Link>
+                      <NavLink
+                        to={user?.role === 'nutritionist' ? "/Nprofile" : "/profile"}
+                        className="navbar__manage-profile"
+                        onClick={() => setIsMenuOpen(false)} // Closes menu on click
+                      >
+                        Manage your profile
+                      </NavLink>
                     </div>
 
                     <div className="divider"></div>
 
                     <ul className='navbar__dropdown-list'>
-                      <li> <Link to='/settings'>Settings</Link></li>
+                      <li> <Link to='/settings' onClick={() => setIsMenuOpen(false)}>Settings</Link></li>
                       <li className="divider"></li>
-                      <li><button onClick={onLogout} className='logout-link'>Logout</button></li>
+                      <li><button onClick={handleLogout} className='logout-link'>Logout</button></li>
                     </ul>
                   </div>
                 )}

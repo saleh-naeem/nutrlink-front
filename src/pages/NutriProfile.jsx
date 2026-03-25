@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../component/Navbar";
 import { getProfile } from "../api/nutritionist";
+import { AuthContext } from "../AuthContext";
 import "./NutriProfile.css";
 
 export const NutriProfile = () => {
+  const { user: authUSer } = useContext(AuthContext)
+
   const navigate = useNavigate();
-  const [data, setData]         = useState(null);
-  const [loading, setLoading]   = useState(true);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [noProfile, setNoProfile] = useState(false);
 
   useEffect(() => {
@@ -29,11 +32,11 @@ export const NutriProfile = () => {
   /* ── Loading ── */
   if (loading) {
     return (
-      <div className="np-page">
+      <div className="np-layout">
         <Navbar />
         <div className="np-loader">
           <div className="np-spinner-lg" />
-          <p>Loading profile…</p>
+          <p>Loading professional profile…</p>
         </div>
       </div>
     );
@@ -42,13 +45,10 @@ export const NutriProfile = () => {
   /* ── No Profile ── */
   if (noProfile) {
     return (
-      <div className="np-page">
-        <div className="np-view-container">
-          <div className="np-page-title">
-            <h1>My Profile</h1>
-            <p>Your nutritionist profile</p>
-          </div>
-          <div className="np-card np-empty-card">
+      <div className="np-layout">
+        <Navbar />
+        <div className="np-master-wrapper flex-center">
+          <div className="np-empty-card">
             <div className="np-empty-icon">🥗</div>
             <h2 className="np-empty-title">No Profile Yet</h2>
             <p className="np-empty-desc">
@@ -59,8 +59,8 @@ export const NutriProfile = () => {
               <div className="np-empty-feature"><span>💬</span> Share your languages</div>
               <div className="np-empty-feature"><span>⭐</span> Build your reputation</div>
             </div>
-            <button className="np-btn" onClick={() => navigate("/creatNprofile")}>
-              Create Profile
+            <button className="np-btn-primary" onClick={() => navigate("/creatNprofile")}>
+              Create Professional Profile
             </button>
           </div>
         </div>
@@ -68,115 +68,134 @@ export const NutriProfile = () => {
     );
   }
 
+  // --- SAFE DATA EXTRACTION ---
   const {
-    user,
-    specialization,
-    bio,
-    cardBio,
-    yearsOfExperience,
-    clientServed,
-    rating,
-    reviewCount,
-    languages,
-    price,
+    user = {},
+    specialization = [],
+    bio = "",
+    cardBio = "",
+    yearsOfExperience = 0,
+    clientServed = 0,
+    rating = 0,
+    reviewCount = 0,
+    languages = [],
+    price = 0,
   } = data;
 
   return (
-    <div className="np-page">
+    <div className="np-layout">
       <Navbar />
-      <div className="np-view-container">
 
-        {/* ── Page Title ── */}
-        <div className="np-page-title-row">
-          <div>
-            <h1 className="np-page-title">My Profile</h1>
-            <p className="np-page-subtitle">Your nutritionist profile</p>
-          </div>
-          <button
-            className="np-edit-btn"
-            onClick={() => navigate("/updateNprofile")}
-          >
-            ✏️ Edit Profile
-          </button>
+      {/* ── MASTER WRAPPER ── */}
+      <div className="np-master-wrapper">
+
+        {/* ── COVER PHOTO ── */}
+        <div className="np-cover">
+          <img
+            src="https://marketplace.canva.com/EAEB97jvqIY/5/0/1600w/canva-blue-and-pink-classy-photo-cherry-blossom-inspirational-quotes-facebook-cover-vpnA8PdWGCs.jpg"
+            alt="Nutritionist Office Cover"
+          />
         </div>
 
-        {/* ── Hero Card ── */}
-        <div className="np-card np-hero-card">
-          <div className="np-avatar">
-            <span>{user?.username?.charAt(0).toUpperCase() ?? "N"}</span>
+        {/* ── HEADER OVERLAP ── */}
+        <div className="np-header-overlap">
+          <div className="np-avatar-container">
+            {authUSer?.profilePic ? (
+              <img src={authUSer.profilePic} alt="Nutritionist Profile" />
+            ) : (
+              <div className="np-avatar-fallback">
+                {user?.username?.charAt(0)?.toUpperCase() || "N"}
+              </div>
+            )}
           </div>
-          <div className="np-hero-info">
-            <h2 className="np-hero-name">{user?.username}</h2>
-            <p className="np-hero-email">{user?.email}</p>
-            {cardBio && <p className="np-hero-cardbio">"{cardBio}"</p>}
-          </div>
-        </div>
 
-        {/* ── Stats Row ── */}
-        <div className="np-stats-grid">
-          <div className="np-card np-stat-card">
-            <span className="np-stat-icon">🏆</span>
-            <span className="np-stat-label">Experience</span>
-            <span className="np-stat-value">{yearsOfExperience ?? 0}</span>
-            <span className="np-stat-unit">years</span>
-          </div>
-          <div className="np-card np-stat-card">
-            <span className="np-stat-icon">👥</span>
-            <span className="np-stat-label">Clients Served</span>
-            <span className="np-stat-value">{clientServed ?? 0}</span>
-            <span className="np-stat-unit">clients</span>
-          </div>
-          <div className="np-card np-stat-card np-stat-card--green">
-            <span className="np-stat-icon">⭐</span>
-            <span className="np-stat-label">Rating</span>
-            <span className="np-stat-value">{rating?.toFixed(1) ?? "0.0"}</span>
-            <span className="np-stat-unit">/ 5 ({reviewCount ?? 0} reviews)</span>
-          </div>
-          <div className="np-card np-stat-card">
-            <span className="np-stat-icon">💰</span>
-            <span className="np-stat-label">Price</span>
-            <span className="np-stat-value">{price ?? "—"}</span>
-            <span className="np-stat-unit">$/hr</span>
-          </div>
-        </div>
 
-        {/* ── Bottom Row ── */}
-        <div className="np-bottom-row">
 
-          {/* Specializations */}
-          <div className="np-card np-info-card">
-            <h3 className="np-info-title">🎯 Specializations</h3>
-            <div className="np-tags">
-              {specialization?.length > 0
-                ? specialization.map((s, i) => (
-                    <span key={i} className="np-tag np-tag--green">{s}</span>
-                  ))
-                : <span className="np-empty-text">Not specified</span>}
+          <div className="np-header-info">
+            <h1>{user?.username || "Nutritionist"}</h1>
+            {user?.isadmin ? (
+              <p className="header-subtitle">Admin</p>
+            ) : (
+              <p className="np-header-subtitle">{cardBio || "Certified Nutrition Professional"}</p>
+            )}
+
+            <div className="np-header-badges">
+              <span className="np-badge np-badge--rating">
+                ⭐ {rating?.toFixed(1) || "0.0"} ({reviewCount} Reviews)
+              </span>
+              <span className="np-badge np-badge--neutral">
+                ✉️ {user?.email}
+              </span>
             </div>
           </div>
 
-          {/* Languages */}
-          <div className="np-card np-info-card">
-            <h3 className="np-info-title">💬 Languages</h3>
-            <div className="np-tags">
-              {languages?.length > 0
-                ? languages.map((l, i) => (
-                    <span key={i} className="np-tag np-tag--blue">{l}</span>
-                  ))
-                : <span className="np-empty-text">Not specified</span>}
-            </div>
+          <div className="np-header-actions">
+            <button className="np-btn-primary" onClick={() => navigate("/updateNprofile")}>
+              ✏️ Edit Profile
+            </button>
           </div>
-
         </div>
 
-        {/* ── Full Bio ── */}
-        {bio && (
-          <div className="np-card np-bio-card">
-            <h3 className="np-info-title">📝 About Me</h3>
-            <p className="np-bio-text">{bio}</p>
-          </div>
-        )}
+        {/* ── TWO COLUMN BODY GRID ── */}
+        <div className="np-body-grid">
 
+          {/* LEFT SIDEBAR */}
+          <aside className="np-sidebar">
+            <div className="np-modern-card">
+              <h3 className="np-card-title">At a Glance</h3>
+              <ul className="np-spec-list">
+                <li><span className="np-spec-icon">💰</span> <strong>Rate:</strong> ${price}/hr</li>
+                <li><span className="np-spec-icon">🏆</span> <strong>Experience:</strong> {yearsOfExperience} yrs</li>
+                <li><span className="np-spec-icon">👥</span> <strong>Clients:</strong> {clientServed}+</li>
+              </ul>
+            </div>
+
+            {languages.length > 0 && (
+              <div className="np-modern-card">
+                <h3 className="np-card-title">💬 Languages</h3>
+                <div className="np-tag-cloud">
+                  {languages.map((l, i) => <span key={i} className="np-tag np-tag--blue">{l}</span>)}
+                </div>
+              </div>
+            )}
+          </aside>
+
+          {/* RIGHT MAIN CONTENT */}
+          <main className="np-main">
+
+            {/* Highlight Metrics */}
+            <div className="np-metrics-row">
+              <div className="np-modern-card np-metric-card">
+                <p className="np-metric-label">Years of Experience</p>
+                <h2 className="np-metric-value">{yearsOfExperience}</h2>
+              </div>
+              <div className="np-modern-card np-metric-card np-highlight">
+                <p className="np-metric-label">Total Clients Served</p>
+                <h2 className="np-metric-value">{clientServed}</h2>
+              </div>
+            </div>
+
+            {/* Specializations */}
+            {specialization.length > 0 && (
+              <div className="np-modern-card">
+                <h3 className="np-card-title">🎯 Core Specializations</h3>
+                <div className="np-tag-cloud">
+                  {specialization.map((s, i) => <span key={i} className="np-tag np-tag--green">{s}</span>)}
+                </div>
+              </div>
+            )}
+
+            {/* Full Bio */}
+            {bio && (
+              <div className="np-modern-card">
+                <h3 className="np-card-title">📝 About Me</h3>
+                <p className="np-bio-text">{bio}</p>
+              </div>
+            )}
+
+          </main>
+
+        </div>
       </div>
     </div>
   );

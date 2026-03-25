@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../component/Navbar";
-import { creatProfile } from "../api/nutritionist";
+import { createProfile } from "../api/nutritionist";
 import "./NutriProfile.css";
 
 const SPECIALIZATIONS = [
@@ -56,7 +56,7 @@ export const NutriCreateProfile = () => {
 
     setLoading(true);
     try {
-      await creatProfile(payload);
+      await createProfile(payload);
       navigate("/Nprofile");
     } catch (err) {
       alert(err.message);

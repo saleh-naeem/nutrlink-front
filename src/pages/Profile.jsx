@@ -1,230 +1,187 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProfile } from "../api/customerapi";
+import { getCustomerProfile } from "../api/customerapi";
 import "./profile.css";
 import Navbar from "../component/Navbar";
+import { AuthContext } from "../AuthContext";
 
 export const Profile = () => {
+  const { user } = useContext(AuthContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [noProfile, setNoProfile] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function profileData() {
+    let isMounted = true;
+    async function fetchProfile() {
       try {
-        const p = await getProfile();
-        if (!p) {
-          setNoProfile(true);
-        } else {
-          setData(p);
-        }
+        const response = await getCustomerProfile();
+        if (isMounted) setData(response);
       } catch (err) {
-        console.error(err);
+        if (isMounted) setError("Could not connect to the server. Please check your connection.");
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
-    profileData();
+    fetchProfile();
+    return () => { isMounted = false };
   }, []);
 
-  if (loading) {
+  if (loading) return <div className="profile-loader"><div className="loader-spinner" /></div>;
+
+  if (error) {
     return (
-      <div className="profile-loader">
-        <div className="loader-spinner" />
-        <p>Loading profile…</p>
-      </div>
-    );
-  }
-
-  /* ── NO PROFILE STATE ── */
-  if (noProfile) {
-    return (
-        
-      <div className="profile-page">
-        <div className="profile-container">
-
-          <div className="page-title"> 
-              <Navbar></Navbar>
-            <h1>My Profile</h1>
-            <p>View your personal health information</p>
-          </div>
-
-          <div className="card no-profile-card">
-            <div className="no-profile-icon">🧍</div>
-            <h2 className="no-profile-title">No Profile Yet</h2>
-            <p className="no-profile-desc">
-              You haven't set up your health profile yet. Create one to start
-              tracking your weight, BMI, and nutrition goals.
-            </p>
-
-            <div className="no-profile-features">
-              <div className="no-profile-feature">
-                <span className="nf-icon">⚖️</span>
-                <span>Track your weight journey</span>
-              </div>
-              <div className="no-profile-feature">
-                <span className="nf-icon">📊</span>
-                <span>Monitor your BMI</span>
-              </div>
-              <div className="no-profile-feature">
-                <span className="nf-icon">🎯</span>
-                <span>Set personalized health goals</span>
-              </div>
-            </div>
-
-            <button
-              className="no-profile-btn"
-              onClick={() => navigate("/createprofile")}
-            >
-              Create Profile
-            </button>
-          </div>
-
-        </div>
-      </div>
+      <><Navbar /><div className="profile-error">{error}</div></>
     );
   }
 
   if (!data) {
     return (
-      <div className="profile-error">
-        <span>⚠️</span> Failed to load profile.
-      </div>
+      <><Navbar />
+        <div className="profile-layout flex-center">
+          <div className="modern-card text-center no-data-card">
+            <h2>No Profile Found</h2>
+            <p>Set up your health profile to see your metrics.</p>
+            <button className="primary-btn" onClick={() => navigate("/createprofile")}>Create Profile</button>
+          </div>
+        </div>
+      </>
     );
   }
 
-  const { user, age, gender, height, currentWeight, targetWeight, allergies } = data;
+  // --- SAFE DATA EXTRACTION (Defensive Coding) ---
+  const { age = 0, gender = "N/A", height = 0, startingWeight = 0, currentWeight = 0, targetWeight = 0, allergies = [] } = data;
 
-  const bmi = (currentWeight / ((height / 100) ** 2)).toFixed(1);
+  const bmi = height > 0 ? (currentWeight / ((height / 100) ** 2)).toFixed(1) : "0.0";
+
   const getBmiInfo = (b) => {
     const val = parseFloat(b);
+    if (!val || val <= 0) return { label: "No Data", color: "#9ca3af" };
     if (val < 18.5) return { label: "Underweight", color: "#3b82f6" };
-    if (val < 25)   return { label: "Normal",      color: "#22c55e" };
-    if (val < 30)   return { label: "Overweight",  color: "#f59e0b" };
-    return               { label: "Obese",         color: "#ef4444" };
+    if (val < 25) return { label: "Normal", color: "#22c55e" };
+    if (val < 30) return { label: "Overweight", color: "#f59e0b" };
+    return { label: "Obese", color: "#ef4444" };
   };
   const bmiInfo = getBmiInfo(bmi);
 
-  const weightDiff = currentWeight - targetWeight;
-  const progressPct = weightDiff > 0
-    ? Math.max(4, Math.min(96, ((0) / weightDiff) * 100))
-    : 100;
-const ctaClick=()=>{
-  navigate("/updateprofile")}
+  const totalJourney = Math.abs(startingWeight - targetWeight);
+  const progressMade = Math.abs(startingWeight - currentWeight);
+  const progressPct = totalJourney > 0 ? Math.max(5, Math.min(100, (progressMade / totalJourney) * 100)) : 100;
+  const weightDiff = (currentWeight - targetWeight).toFixed(1);
+
   return (
-    <><Navbar ctaLabel="update profile"onCtaClick={ctaClick}></Navbar>
-    
-    <div className="profile-page">
-         
+    <>
+      <Navbar />
+      <div className="profile-layout">
 
-      <div className="profile-container">
+        {/* White Master Wrapper centered on page */}
+        <div className="profile-master-wrapper">
 
-        <div className="page-title">
-          <h1>My Profile</h1>
-          <p>View your personal health information</p>
-        </div>
+          {/* --- COVER PHOTO --- */}
+          <div className="profile-cover">
+            <img src="https://marketplace.canva.com/EAEB97jvqIY/5/0/1600w/canva-blue-and-pink-classy-photo-cherry-blossom-inspirational-quotes-facebook-cover-vpnA8PdWGCs.jpg" alt="Profile Cover" />
+          </div>
 
-        <div className="card hero-card">
-          <div className="hero-avatar">
-            <span>{user.username.charAt(0).toUpperCase()}</span>
-          </div>
-          <div className="hero-details">
-            <h2 className="hero-name">{user.username}</h2>
-            <p className="hero-email">{user.email}</p>
-            <span className={`badge badge--${gender.toLowerCase()}`}>
-              {gender === "Male" ? "♂" : "♀"}&nbsp;{gender}
-            </span>
-          </div>
-        </div>
-
-        <div className="stats-grid">
-          <div className="card stat-card">
-            <div className="stat-icon">🎂</div>
-            <span className="stat-label">Age</span>
-            <span className="stat-value">{age}</span>
-            <span className="stat-unit">years</span>
-          </div>
-          <div className="card stat-card">
-            <div className="stat-icon">📏</div>
-            <span className="stat-label">Height</span>
-            <span className="stat-value">{height}</span>
-            <span className="stat-unit">cm</span>
-          </div>
-          <div className="card stat-card">
-            <div className="stat-icon">⚖️</div>
-            <span className="stat-label">Current Weight</span>
-            <span className="stat-value">{currentWeight}</span>
-            <span className="stat-unit">kg</span>
-          </div>
-          <div className="card stat-card stat-card--green">
-            <div className="stat-icon">🎯</div>
-            <span className="stat-label">Target Weight</span>
-            <span className="stat-value">{targetWeight}</span>
-            <span className="stat-unit">kg</span>
-          </div>
-        </div>
-
-        <div className="bottom-row">
-          <div className="card bmi-card">
-            <h3 className="card-title">BMI</h3>
-            <div className="bmi-score" style={{ color: bmiInfo.color }}>{bmi}</div>
-            <span className="bmi-label" style={{ color: bmiInfo.color }}>{bmiInfo.label}</span>
-            <div className="bmi-bar-track">
-              <div
-                className="bmi-bar-fill"
-                style={{
-                  width: `${Math.min(100, ((parseFloat(bmi) - 10) / 30) * 100)}%`,
-                  backgroundColor: bmiInfo.color,
-                }}
-              />
+          {/* --- HEADER OVERLAP --- */}
+          <div className="profile-header-overlap">
+            <div className="avatar-container">
+              <img src={user?.profilePic || "https://via.placeholder.com/150"} alt="Avatar" />
             </div>
-            <div className="bmi-scale-labels">
-              <span>Thin</span>
-              <span>Normal</span>
-              <span>Heavy</span>
+
+            <div className="header-info">
+              <h1>{user?.username || "Health User"}</h1>
+              {user?.isadmin ? (
+                <p className="header-subtitle">Admin</p>
+              ) : (
+                <p className="header-subtitle">Nutrlink Member</p>
+              )}
+            </div>
+
+            <div className="header-actions">
+              <button className="primary-btn" onClick={() => navigate("/updateprofile")}>
+                Update Profile
+              </button>
             </div>
           </div>
 
-          <div className="card journey-card">
-            <h3 className="card-title">Weight Journey</h3>
-            <div className="journey-numbers">
-              <div className="journey-num">
-                <span className="journey-num-value">{currentWeight}</span>
-                <span className="journey-num-label">Current (kg)</span>
+          {/* --- TWO COLUMN BODY GRID --- */}
+          <div className="profile-body-grid">
+
+            {/* LEFT SIDEBAR (Static Specs & Allergies) */}
+            <aside className="profile-sidebar">
+              <div className="modern-card specs-card">
+                <h3 className="card-title">Personal Specs</h3>
+                <ul className="spec-list">
+                  <li><span className="spec-icon">📩</span> <strong>Email:</strong> {user?.email}</li>
+                  <li><span className="spec-icon">🎂</span> <strong>Age:</strong> {age} yrs</li>
+                  <li><span className="spec-icon">📏</span> <strong>Height:</strong> {height} cm</li>
+                </ul>
               </div>
-              <div className="journey-arrow">→</div>
-              <div className="journey-num journey-num--target">
-                <span className="journey-num-value">{targetWeight}</span>
-                <span className="journey-num-label">Target (kg)</span>
+
+              {allergies.length > 0 && (
+                <div className="modern-card">
+                  <h3 className="card-title">⚠️ Dietary Restrictions</h3>
+                  <div className="tag-cloud">
+                    {allergies.map((a, i) => <span key={i} className="allergy-tag">{a}</span>)}
+                  </div>
+                </div>
+              )}
+            </aside>
+
+            {/* RIGHT MAIN CONTENT (Dynamic Health Metrics) */}
+            <main className="profile-main">
+
+              {/* Weight Overview */}
+              <div className="metrics-row">
+                <div className="modern-card metric-card">
+                  <p className="metric-label">Current Weight</p>
+                  <h2 className="metric-value">{currentWeight} <span className="metric-unit">kg</span></h2>
+                </div>
+                <div className="modern-card metric-card goal-card">
+                  <p className="metric-label">Target Weight</p>
+                  <h2 className="metric-value">{targetWeight} <span className="metric-unit">kg</span></h2>
+                </div>
               </div>
-            </div>
-            <div className="journey-track">
-              <div className="journey-fill" style={{ width: `${progressPct}%` }} />
-            </div>
-            <p className="journey-note">
-              {weightDiff > 0
-                ? `${weightDiff} kg remaining to reach your goal`
-                : weightDiff < 0
-                ? `Gain ${Math.abs(weightDiff)} kg to reach your goal`
-                : "🎉 You've reached your target weight!"}
-            </p>
+
+              {/* Advanced Modules (BMI & Journey) */}
+              <div className="modules-grid">
+
+                {/* BMI Module */}
+                <div className="modern-card">
+                  <h3 className="card-title">Body Mass Index</h3>
+                  <div className="bmi-display">
+                    <h1 className="bmi-number" style={{ color: bmiInfo.color }}>{bmi}</h1>
+                    <span className="bmi-text" style={{ color: bmiInfo.color }}>{bmiInfo.label}</span>
+                  </div>
+                  <div className="progress-track">
+                    <div className="progress-fill" style={{ width: `${Math.min(100, (bmi / 40) * 100)}%`, backgroundColor: bmiInfo.color }}></div>
+                  </div>
+                </div>
+
+                {/* Journey Module */}
+                <div className="modern-card">
+                  <h3 className="card-title">Goal Progress</h3>
+                  <div className="journey-display">
+                    <div className="j-endpoints">
+                      <span className="j-start">{startingWeight}kg</span>
+                      <span className="j-end">{targetWeight}kg</span>
+                    </div>
+                    <div className="progress-track">
+                      <div className="progress-fill green-fill" style={{ width: `${progressPct}%` }}></div>
+                    </div>
+                  </div>
+                  <p className="journey-footer">
+                    {weightDiff > 0 ? `${weightDiff} kg remaining` : "🎉 Goal Achieved!"}
+                  </p>
+                </div>
+
+              </div>
+            </main>
+
           </div>
         </div>
-
-        {allergies && allergies.length > 0 && (
-          <div className="card allergies-card">
-            <h3 className="card-title">⚠️ Allergies &amp; Restrictions</h3>
-            <div className="allergies-list">
-              {allergies.map((a, i) => (
-                <span key={i} className="allergy-tag">{a}</span>
-              ))}
-            </div>
-          </div>
-        )}
-
       </div>
-    </div>
     </>
   );
 };

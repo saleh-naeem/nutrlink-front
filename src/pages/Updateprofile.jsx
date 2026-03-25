@@ -2,37 +2,37 @@ import Navbar from "../component/Navbar";
 import FormField from "../component/FormField";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { updateProfile, getProfile } from "../api/customerapi";
+import { updateCustomerProfile, getCustomerProfile } from "../api/customerapi";
 import "./CreateProfile.css"; /* reuses the same CSS — no new file needed */
 
 export const Updateprofile = () => {
   const navigate = useNavigate();
-  const [loading, setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [formData, setFormData] = useState({
-    age:           "",
-    gender:        "",
-    height:        "",
+    age: "",
+    gender: "",
+    height: "",
     currentWeight: "",
-    targetWeight:  "",
-    allergies:     ""
+    targetWeight: "",
+    allergies: ""
   });
 
   /* ── Pre-fill the form with the user's existing profile ── */
   useEffect(() => {
     async function loadProfile() {
       try {
-        const p = await getProfile();
+        const p = await getCustomerProfile();
         if (p) {
           setFormData({
-            age:           p.age           ?? "",
-            gender:        p.gender        ?? "",
-            height:        p.height        ?? "",
+            age: p.age ?? "",
+            gender: p.gender ?? "",
+            height: p.height ?? "",
             currentWeight: p.currentWeight ?? "",
-            targetWeight:  p.targetWeight  ?? "",
-            allergies:     Array.isArray(p.allergies)
-                             ? p.allergies[0] ?? ""   // select supports one value
-                             : p.allergies    ?? ""
+            targetWeight: p.targetWeight ?? "",
+            allergies: Array.isArray(p.allergies)
+              ? p.allergies[0] ?? ""   // select supports one value
+              : p.allergies ?? ""
           });
         }
       } catch (err) {
@@ -67,7 +67,7 @@ export const Updateprofile = () => {
     }
 
     try {
-      const result = await updateProfile(payload);
+      const result = await updateCustomerProfile(payload);
       console.log(result);
       alert("Profile updated successfully");
       navigate("/profile");

@@ -1,74 +1,142 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext'; // Adjust path if your context is elsewhere
+import Typewriter from 'typewriter-effect';
+import CountUp from 'react-countup';
+
+const typewriterOptions = {
+  nutritionist: [
+    'Managing your clients efficiently',
+    'Creating professional meal plans',
+    'Tracking patient health metrics',
+    'Expanding your wellness practice'
+  ],
+  customer: [
+    'Tracking your daily progress',
+    'Achieving your weight goals',
+    'Personalizing your diet plan',
+    'Connecting with your expert'
+  ],
+  guest: [
+    'Making your life better',
+    'The Smart Bridge to Better Health',
+    'Connecting you with experts',
+    'Personalizing your diet',
+    'Smart food tracking',
+    'Evidence-Based Wellness Ecosystem'
+  ]
+}
+
+
 
 const Hero = () => {
-    // 1. Extract the user from the global state
-    const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const isLogin = !!user;
 
-    return (
-        <section className="flex flex-col md:flex-row items-center justify-between px-8 py-16 bg-[#eef7f0]">
-            {/* Left Content Area */}
-            <div className="md:w-1/2 space-y-6">
+  const getHeroContent = (user, isLogin) => {
+    const role = user?.role?.toLowerCase();
 
-                {/* 2. Conditionally render the greeting using Optional Chaining */}
-                {user?.username && (
-                    <p className="text-xl font-semibold text-gray-700 mb-2 animate-fade-in">
-                        Welcome back, <span className="text-green-600 capitalize">{user.username}</span>! 👋
-                    </p>
-                )}
+    const displayName = user?.username
+      ? user.username.charAt(0).toUpperCase() + user.username.slice(1)
+      : "User";
 
-                <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight">
-                    Your Journey to <span className="text-green-500">Better Health</span> Starts Here
-                </h1>
+    if (!isLogin) {
+      return {
+        title: <>Your Journey to <span className='text-green'>Better Health</span> Starts Here</>,
+        description: "Connect with expert nutritionists, track your diet, and achieve your wellness goals with our AI-powered platform.",
+        primaryBtn: { text: "Get Started", link: "/RegisterType" },
+        secondaryBtn: { text: "Book Appointment", link: "/nutritionists" }
+      };
+    }
 
-                <p className="text-lg text-gray-600">
-                    Connect with expert nutritionists, track your diet, and achieve your
-                    wellness goals with our AI-powered platform.
-                </p>
+    if (role === 'nutritionist') {
+      return {
+        title: <>Empower Your <span className="text-green">Clinic</span> with AI</>,
+        description: `Welcome back, Coach ${displayName}. Manage your patients, update diet plans, and check your schedule.`,
+        primaryBtn: { text: "Go to Dashboard", link: "/Ndashboard" },
+        secondaryBtn: { text: "View Appointments", link: "/appointments" }
+      };
+    }
 
-                <div className="flex space-x-4 pt-4">
-                    <Link
-                        to={user?.role === 'nutritionist' ? '/Ndashboard' : '/dashboard'}
-                        className="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition"
-                    >
-                        Go to Dashboard
-                    </Link>
-                    <Link
-                        to="/nutritionists"
-                        className="px-6 py-3 bg-white text-green-500 border-2 border-green-500 font-semibold rounded-lg hover:bg-green-50 transition"
-                    >
-                        Find Nutritionists
-                    </Link>
-                </div>
+    return {
+      title: <>Welcome Back, <span className="text-green">{displayName}</span>!</>,
+      description: "Ready to reach your weight goals today? Check your latest meal plan and track your progress.",
+      primaryBtn: { text: "Go to Dashboard", link: "/Dashboard" },
+      secondaryBtn: { text: "Find Nutritionists", link: "/nutritionists" }
+    };
+  };
 
-                {/* Statistics Row */}
-                <div className="flex space-x-8 pt-8">
-                    <div>
-                        <h3 className="text-3xl font-bold text-gray-900">10K+</h3>
-                        <p className="text-xs text-gray-500 uppercase tracking-wide">Happy Clients</p>
-                    </div>
-                    <div>
-                        <h3 className="text-3xl font-bold text-gray-900">500+</h3>
-                        <p className="text-xs text-gray-500 uppercase tracking-wide">Nutritionists</p>
-                    </div>
-                    <div>
-                        <h3 className="text-3xl font-bold text-gray-900">95%</h3>
-                        <p className="text-xs text-gray-500 uppercase tracking-wide">Success Rate</p>
-                    </div>
-                </div>
+  const content = getHeroContent(user, isLogin);
+
+  const userRole = user?.role || 'guest'
+  const activeStrings = typewriterOptions[userRole] || typewriterOptions.guest
+
+
+  return (
+    <section className="hero-section">
+      <div className="hero-content">
+        <div className="hero-text">
+          {/* Typetwriter AI Feed */}
+          <div className="typewriter-container">
+            <span className="typewriter-label"></span>
+            <Typewriter
+              options={{
+                strings: activeStrings,
+                autoStart: true,
+                loop: true,
+                deleteSpeed: 50,
+                delay: 75,
+                cursor: '_'
+              }}
+            />
+          </div>
+
+          <h1 className="hero-title"> {content.title} </h1>
+
+          <p className="hero-description"> {content.description} </p>
+
+          <div className="hero-buttons">
+            {!isLogin ? (
+              <>
+                <Link to="/RegisterType"><button className="btn-primary">Get Started</button></Link>
+                <Link to="/nutritionists"><button className="btn-secondary">Book Appointment</button></Link>
+              </>
+            ) : (
+              <>
+                <Link to={user?.role === 'nutritionist' ? '/Ndashboard' : '/Dashboard'}>
+                  <button className="btn-primary">Go to Dashboard</button>
+                </Link>
+                <Link to="/nutritionists"><button className="btn-secondary">Find Nutritionists</button></Link>
+              </>
+            )}
+          </div>
+
+          <div className="stats-container">
+            <div className="stat-item">
+              <h3><CountUp className='stat-number' end={10} duration={3} />K+</h3>
+              <p className='stat-label'>Happy Clients</p>
             </div>
-
-            {/* Right Image Area */}
-            <div className="md:w-1/2 mt-10 md:mt-0 flex justify-end">
-                <img
-                    src="/hero-food-image.jpg" // Ensure you place your actual food image in the public folder and link it here
-                    alt="Healthy food bowl"
-                    className="rounded-3xl shadow-2xl object-cover max-h-[500px]"
-                />
+            <div className="stat-item">
+              <h3><CountUp className='stat-number' end={500} duration={3} />+</h3>
+              <p className='stat-label'>Nutritionists</p>
             </div>
-        </section>
-    );
-};
+            <div className="stat-item">
+              <h3><CountUp className='stat-number' end={95} duration={3} />%</h3>
+              <p className="stat-label">Success Rate</p>
+            </div>
+          </div>
+        </div>
 
-export default Hero;
+        <div className="hero-image">
+          <img
+            src="https://img.freepik.com/premium-photo/laptop-desk-nutritionists-office-with-healthy-food-displays_1170794-294316.jpg"
+            alt="Healthy Food"
+            className="food-image"
+          />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default Hero

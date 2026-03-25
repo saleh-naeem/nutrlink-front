@@ -1,4 +1,6 @@
 import { Navigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from '../AuthContext';
 
 /**
  * RoleRoute — renders children only if the user's role matches.
@@ -9,21 +11,22 @@ import { Navigate } from 'react-router-dom';
  *   <RoleRoute role="nutritionist"> <NutriProfile />  </RoleRoute>
  */
 const RoleRoute = ({ children, role }) => {
-  const token     = localStorage.getItem('authToken');
-  const userRole  = localStorage.getItem('userRole');
+  const { user, isLogin, loading } = useContext(AuthContext)
 
-  // Not logged in at all → go to login
-  if (!token) return <Navigate to="/login" replace />;
 
-  // Role matches → render the page
-  if (userRole === role) return children;
+  if (loading) return <div className="loading-spinner">Checking Sessions...</div>
+  if (!isLogin) return <Navigate to="/login" />
 
-  // Wrong role → redirect to their correct profile
-  if (userRole === 'nutritionist') return <Navigate to="/Nprofile" replace />;
-  if (userRole === 'customer')     return <Navigate to="/profile"  replace />;
 
-  // Fallback
-  return <Navigate to="/login" replace />;
+
+  const token = localStorage.getItem('authToken');
+  const userRole = localStorage.getItem('userRole');
+
+  if (user?.role !== role) {
+    return <Navigate to="/unauthorized" />;
+  }
+
+  return children;
 };
 
 export default RoleRoute;

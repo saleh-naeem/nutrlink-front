@@ -1,6 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react';
-import CountUp from 'react-countup';
-import Typewriter from 'typewriter-effect';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './Home.css';
 import Navbar from '../component/Navbar';
@@ -9,6 +7,7 @@ import NutritionistSection from '../component/Nutritionist/NutritionistSection';
 import { Aibot } from '../component/Aibot';
 import HomeSchedule from '../component/HomeSchedule';
 import { getFilteredCards, getRecommendedExperts } from '../api/nutritionist'
+import Hero from '../component/Hero'
 
 
 // Global state for authentication
@@ -19,67 +18,45 @@ const Home = () => {
   const { user, handleLogout } = useContext(AuthContext);
   const isLogin = !!user;
 
-  // Nutritionists Dataset
-  const featuredNutritionists = [
-    {
-      _id: 1,
-      user: { username: 'Dr. Sarah', profilePic: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400' },
-      rating: 4.8,
-      reviewCount: 284,
-      price: 45,
-      specialization: ['Weight Loss'],
-      badge: 'Bestseller'
-    }
-  ];    // { id: 2, name: 'Dr. Michael Chen', image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400', rating: 4.9, reviews: 412, price: 50, specialties: ['Diabetes Management'], badge: 'Premium' },
-  // { id: 4, name: 'Dr. James Wilson', image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400', rating: 4.8, reviews: 356, price: 55, specialties: ['Clinical Nutrition'], badge: 'Premium' },
-  // { id: 6, name: 'David Park', image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400', rating: 4.9, reviews: 120, price: 42, specialties: ['Keto Diet'], badge: 'New' },
-  // { id: 3, name: 'Emma Rodriguez', image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400', rating: 4.7, reviews: 198, price: 40, specialties: ['Vegan Nutrition'], badge: 'New' },
-  // { id: 5, name: 'Lisa Anderson', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400', rating: 4.6, reviews: 167, price: 38, specialties: ['Pregnancy Nutrition'], badge: 'Bestseller' },
-  // { id: 7, name: 'Dr. Olivia White', image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400', rating: 4.7, reviews: 95, price: 48, specialties: ['Eating Disorders'], badge: 'Premium' },
-  // { id: 8, name: 'Marcus Thorne', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400', rating: 4.8, reviews: 210, price: 44, specialties: ['Bodybuilding'], badge: 'Bestseller' },
-  // { id: 9, name: 'Sophia Loren', image: 'https://images.unsplash.com/photo-1598128558393-70ff21433be0?w=400', rating: 4.5, reviews: 88, price: 35, specialties: ['Meal Prep'], badge: 'New' },
-  // { id: 10, name: 'Dr. Robert Fox', image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400', rating: 4.9, reviews: 530, price: 65, specialties: ['Holistic Health'], badge: 'Premium' },
-  // { id: 11, name: 'Isabella Garcia', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400', rating: 4.7, reviews: 142, price: 39, specialties: ['Hormonal Balance'], badge: 'Bestseller' },
-  // { id: 12, name: 'Kevin Hartly', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400', rating: 4.6, reviews: 75, price: 40, specialties: ['Senior Nutrition'], badge: 'New' }
-
   const [nutritionists, setNutritionists] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // 1. Add error state
-  useEffect(() => {
-    const loadAllHomeData = async () => {
-      try {
-        setError(null); // Reset error before fetching
-        const data = await getFilteredCards();
-        setNutritionists(data.cards || []);
-      } catch (err) {
-        console.error('Home Data Fetch Error:', err);
-        setError("Could not load experts. Please try again later."); // 2. Catch the error
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadAllHomeData();
-  }, []);
-
+  const [error, setError] = useState(null);
   const [recommended, setRecommended] = useState([])
   const [recLoading, setRecLoading] = useState(false)
   useEffect(() => {
-    const fetchMatches = async () => {
-      setRecLoading(true)
+    const loadHomeData = async () => {
+      const shouldFetchRecs = isLogin && user?.role === 'customer';
+
       try {
-        const data = await getRecommendedExperts()
-        setRecommended(data)
+        // 1. If we don't have public data yet, fetch it
+        if (nutritionists.length === 0) {
+          setLoading(true);
+          const cardsResponse = await getFilteredCards();
+          setNutritionists(cardsResponse.cards || []);
+          setLoading(false);
+        }
+
+        // 2. Handle Recommendations separately
+        if (shouldFetchRecs && recommended.length === 0) {
+          setRecLoading(true);
+          const recsResponse = await getRecommendedExperts();
+          setRecommended(recsResponse || []);
+          setRecLoading(false);
+        } else if (!isLogin) {
+          setRecommended([]);
+        }
+
       } catch (err) {
-        console.log('Recommendation fetch failed:', err)
+        console.error('Data Fetch Error:', err);
+        setError("Something went wrong. Please try again.");
       } finally {
-        setRecLoading(false)
+        setLoading(false);
+        setRecLoading(false);
       }
-    }
+    };
 
-    if (isLogin && user?.role === 'customer')
-      fetchMatches()
-  }, [isLogin, user?.role])
-
+    loadHomeData();
+  }, [isLogin, user?.role]);
 
   const onLogoutClick = () => {
     handleLogout();
@@ -88,142 +65,18 @@ const Home = () => {
 
   const handleCtaClick = () => navigate("/RegisterType");
 
-  const getHeroContent = (user, isLogin) => {
-    const role = user?.role?.toLowerCase();
-
-    const displayName = user?.username
-      ? user.username.charAt(0).toUpperCase() + user.username.slice(1)
-      : "User";
-
-    if (!isLogin) {
-      return {
-        title: <>Your Journey to <span className='text-green'>Better Health</span> Starts Here</>,
-        description: "Connect with expert nutritionists, track your diet, and achieve your wellness goals with our AI-powered platform.",
-        primaryBtn: { text: "Get Started", link: "/RegisterType" },
-        secondaryBtn: { text: "Book Appointment", link: "/nutritionists" }
-      };
-    }
-
-    if (role === 'nutritionist') {
-      return {
-        title: <>Empower Your <span className="text-green">Clinic</span> with AI</>,
-        description: `Welcome back, Coach ${displayName}. Manage your patients, update diet plans, and check your schedule.`,
-        primaryBtn: { text: "Go to Dashboard", link: "/Ndashboard" },
-        secondaryBtn: { text: "View Appointments", link: "/appointments" }
-      };
-    }
-
-    return {
-      title: <>Welcome Back, <span className="text-green">{displayName}</span>!</>,
-      description: "Ready to reach your weight goals today? Check your latest meal plan and track your progress.",
-      primaryBtn: { text: "Go to Dashboard", link: "/Dashboard" },
-      secondaryBtn: { text: "Find Nutritionists", link: "/nutritionists" }
-    };
-  };
-
-  const content = getHeroContent(user, isLogin);
-
-  const typewriterOptions = {
-    nutritionist: [
-      'Managing your clients efficiently',
-      'Creating professional meal plans',
-      'Tracking patient health metrics',
-      'Expanding your wellness practice'
-    ],
-    customer: [
-      'Tracking your daily progress',
-      'Achieving your weight goals',
-      'Personalizing your diet plan',
-      'Connecting with your expert'
-    ],
-    guest: [
-      'Making your life better',
-      'The Smart Bridge to Better Health',
-      'Connecting you with experts',
-      'Personalizing your diet',
-      'Smart food tracking',
-      'Evidence-Based Wellness Ecosystem'
-    ]
-  }
-  const userRole = user?.role || 'guest'
-  const activeStrings = typewriterOptions[userRole] || typewriterOptions.guest
 
   return (
     <div className="container">
       <div className="home-page">
-        <Navbar
-          isLogin={isLogin}
-          user={user}
-          onLogout={onLogoutClick}
-          ctaLabel={!isLogin ? "Get Started" : ""}
-          onCtaClick={handleCtaClick}
-        />
+        <Navbar />
+
+        {/* Ai Bot */}
         <Aibot />
 
         {/* Hero Section */}
-        <section className="hero-section">
-          <div className="hero-content">
-            <div className="hero-text">
-              {/* Typetwriter AI Feed */}
-              <div className="typewriter-container">
-                <span className="typewriter-label"></span>
-                <Typewriter
-                  options={{
-                    strings: activeStrings,
-                    autoStart: true,
-                    loop: true,
-                    deleteSpeed: 50,
-                    delay: 75,
-                    cursor: '_'
-                  }}
-                />
-              </div>
+        <Hero />
 
-              <h1 className="hero-title"> {content.title} </h1>
-
-              <p className="hero-description"> {content.description} </p>
-
-              <div className="hero-buttons">
-                {!isLogin ? (
-                  <>
-                    <Link to="/RegisterType"><button className="btn-primary">Get Started</button></Link>
-                    <Link to="/nutritionists"><button className="btn-secondary">Book Appointment</button></Link>
-                  </>
-                ) : (
-                  <>
-                    <Link to={user?.role === 'nutritionist' ? '/Ndashboard' : '/Dashboard'}>
-                      <button className="btn-primary">Go to Dashboard</button>
-                    </Link>
-                    <Link to="/nutritionists"><button className="btn-secondary">Find Nutritionists</button></Link>
-                  </>
-                )}
-              </div>
-
-              <div className="stats-container">
-                <div className="stat-item">
-                  <h3><CountUp className='stat-number' end={10} duration={3} />K+</h3>
-                  <p className='stat-label'>Happy Clients</p>
-                </div>
-                <div className="stat-item">
-                  <h3><CountUp className='stat-number' end={500} duration={3} />+</h3>
-                  <p className='stat-label'>Nutritionists</p>
-                </div>
-                <div className="stat-item">
-                  <h3><CountUp className='stat-number' end={95} duration={3} />%</h3>
-                  <p className="stat-label">Success Rate</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="hero-image">
-              <img
-                src="https://img.freepik.com/premium-photo/laptop-desk-nutritionists-office-with-healthy-food-displays_1170794-294316.jpg"
-                alt="Healthy Food"
-                className="food-image"
-              />
-            </div>
-          </div>
-        </section>
 
         <HomeSchedule />
 
@@ -254,7 +107,6 @@ const Home = () => {
             isRecommended={true}
           />
         )}
-        {/* {Recommended for you Section} */}
 
         <section className="features-section">
           <h2 className="section-title">Everything You Need for a Healthier Life</h2>
