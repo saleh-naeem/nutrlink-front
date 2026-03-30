@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import './Navbar.css';
+import SettingsDropdown from './Setting'
 
 const DEFAULT_LINKS = [
   { label: 'Home',       to: '/home' },
@@ -17,6 +18,7 @@ const Navbar = ({ links = DEFAULT_LINKS, ctaLabel = '', onCtaClick, isLogin, onL
         <div className="navbar__brand-icon">N</div>
         <span>Nutrlink</span>
       </Link>
+
 
       {/* Nav links */}
       <ul className="navbar__links">
@@ -42,8 +44,10 @@ const Navbar = ({ links = DEFAULT_LINKS, ctaLabel = '', onCtaClick, isLogin, onL
           Logout
         </button>
       )}
+      <SettingsDropdown></SettingsDropdown>
 
     </div>
+    
   </nav>
 );
 
