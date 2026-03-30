@@ -1,0 +1,257 @@
+.nutritionist-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #efefef;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-direction: row;
+  height: 250px;
+  max-width: 100%;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.nutritionist-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  border-color: #10b981;
+}
+
+.nutritionist-card.grid-view {
+  flex-direction: column;
+  width: 280px;
+}
+
+
+
+.nutritionist-card.list-view:last-child {
+  margin-bottom: 10px;
+}
+
+.nutritionist-card .card-image-wrapper {
+  width: 250px;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nutritionist-card .card-image-wrapper img {
+  border-radius: 6px;
+}
+
+.nutritionist-card .card-content {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  flex: 1;
+  margin-top: 10px;
+}
+
+/* Hide the divider in list view for a cleaner look */
+/* ── Image & Overlay Fix ─────────────────────────────────── */
+
+.card-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: #f9f9f9;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.nutritionist-card:hover .card-image {
+  transform: scale(1.08);
+  /* Subtle zoom on hover */
+}
+
+/* ── Content Layout ────────────────────────────────────────── */
+
+.card-content {
+  padding: 16px;
+  background: white;
+  flex-grow: 1;
+  position: relative;
+  z-index: 5;
+  /* Keeps text above the image wrapper */
+}
+
+.card-content-inner .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.card-header .card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  font-style: italic;
+  position: relative;
+  bottom: -5px;
+}
+
+.available {
+  background: rgba(104, 214, 179, 0.25);
+  color: rgb(16, 125, 129);
+  padding: 6px 10px 7px 9px;
+  border-radius: 20px;
+}
+
+.availability-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+  margin-right: 8px;
+  position: relative;
+  top: -1px;
+}
+
+.specialties-tags {
+  font-size: 0.85rem;
+  color: red;
+  margin: 3px 0 25px 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.spec-tag {
+  margin: 2px;
+  position: relative;
+  z-index: 1;
+  background: rgba(29, 158, 117, 0.25);
+  border: 1px solid rgba(29, 158, 117, 4);
+  color: #333;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  height: 100%;
+}
+
+.card-footer-ed {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+  font-style: italic;
+}
+
+.card-bio {
+  line-height: 1.2;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 50px
+}
+
+.info-down {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.card-languages-ed,
+.card-experience,
+.card-review,
+.rating {
+  display: flex;
+  align-items: center;
+}
+
+.card-languages-ed p,
+.card-experience p,
+.card-review p,
+.rating p {
+  font-size: .9rem;
+  padding-left: 3px;
+  color: #666;
+  font-weight: 500;
+}
+
+.right-info1 {
+  position: relative;
+  top: -35px;
+  right: 15px;
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  align-items: flex-end;
+}
+
+.right-info1 .price {
+  font-size: 2.3rem;
+  font-weight: 350;
+  position: relative;
+  right: 10px;
+
+}
+
+.right-info1 .price-label {
+  color: #666;
+  font-size: .9rem;
+  font-weight: 500;
+  position: relative;
+  top: -5px;
+}
+
+.rating {
+  position: relative;
+  right: 10px;
+}
+
+.rating p {
+  font-size: 1.1rem;
+}
+
+.book {
+  position :relative;
+  top: 15px;
+  background: rgba(29, 158, 117, 0.25);
+  border: .5px solid black;
+  padding: 12px 7px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.book:hover {
+  color: white;
+  background-color: #00c853;
+}
+
+/* ── Responsive Grid Logic ────────────────────────────────── */
+
+@media (max-width: 1200px) {
+  .card-image-wrapper {
+    height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 1rem;
+  }
+}

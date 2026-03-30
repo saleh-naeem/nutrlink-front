@@ -1,0 +1,162 @@
+.nutritionist-section-wrapper {
+  padding: 40px 0;
+  background-color: #f8fbf9;
+}
+
+.section-container {
+  margin: 0 auto;
+  max-width: 1200px;
+  position: relative;
+}
+
+.scroll-arrow-left,
+.scroll-arrow-right {
+  position: absolute;
+  cursor: pointer;
+  top: 50%;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.scroll-arrow-left:hover,
+.scroll-arrow-right:hover {
+  background-color: #f9fafb;
+  color: #00c853;
+  border-color: #00c853;
+  transform: translateY(-10%) scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.scroll-arrow-left {
+  left: -45px;
+}
+
+.scroll-arrow-right {
+  right: -45px;
+}
+
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+}
+
+.section-header {
+  width: 100%;
+  /* Ensure it spans full width */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* This keeps the text and button on the same horizontal line */
+  margin-bottom: 30px;
+  /* Add space between header and grid */
+}
+
+.section-title {
+  font-size: 2rem;
+  color: #1f2937;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  font-style: oblique;
+  letter-spacing: -0.02em;
+}
+
+.nutritionists-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 24px;
+  padding: 10px 5px 30px;
+  /* Bottom padding for card shadows */
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+.nutritionists-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.nutritionists-grid>*:not(.no-data-container) {
+  flex: 0 0 calc(25% - 30px);
+  scroll-snap-align: start;
+}
+
+.no-data-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  background: white;
+  border: 2px dashed #e5e7eb;
+  border-radius: 16px;
+  margin: 20px 0;
+}
+
+.no-data-text {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin-bottom: 20px;
+  max-width: 400px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* --- Buttons --- */
+.view-nutritionists-btn,
+.empty-state-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+
+  /* Your existing styles */
+  font-size: 0.95rem;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px solid #00c853;
+  background-color: white;
+  color: #00c853;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.view-nutritionists-btn:hover,
+.empty-state-btn:hover {
+  color: white;
+  background-color: #00c853;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 200, 83, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .nutritionists-grid>*:not(.no-data-container) {
+    flex: 0 0 calc(45% - 12px);
+    /* 2 cards on tablet */
+  }
+}
+
+@media (max-width: 640px) {
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .nutritionists-grid>*:not(.no-data-container) {
+    flex: 0 0 85%;
+    /* 1 card peeking on mobile */
+  }
+}

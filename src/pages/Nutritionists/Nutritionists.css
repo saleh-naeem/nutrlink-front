@@ -1,0 +1,140 @@
+html {
+  scrollbar-gutter: stable;
+}
+
+.nutritionists-page .navbar {
+  position: relative;
+  top: 0;
+  margin: 0;
+  width: 100%;
+  border-radius: 0;
+  border-bottom: 1px solid #eee;
+  background: rgba(255, 255, 255, 0.95);
+  /* Less transparent for search */
+}
+
+.results-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.is-loading {
+  opacity: 0.6;
+  pointer-events: none; /* Disable interaction while fetching */
+}
+
+
+
+.nutritionists-page .hero-header {
+  margin: 0;
+  height: 350px;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    url('https://i.pinimg.com/originals/a5/c0/ec/a5c0ec7ebb752a5270602564c6cccecf.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.hero-header-tag {
+  position: relative;
+  z-index: 1;
+  background: rgba(29, 158, 117, 0.25);
+  border: 1px solid rgba(29, 158, 117, 0.4);
+  color: #9fe1cb;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 100px;
+  margin-bottom: 10px;
+}
+
+.hero-header-title {
+  position: relative;
+  z-index: 1;
+  font-family: 'DM Serif Display', serif;
+  font-size: 42px;
+  color: white;
+  text-align: center;
+  line-height: 1.15;
+  max-width: 560px;
+  font-weight: 400;
+  padding-bottom: 7px;
+}
+
+.hero-header-title em {
+  font-style: italic;
+  color: #5dcaa5;
+}
+
+.hero-header-sub {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.nutritionists-page .filter-bar {
+  margin-bottom: 50px;
+  width: 90%;
+  border-radius: 20px;
+  margin: 0 auto;
+  top: -40px;
+  position: relative;
+}
+
+.cards {
+  margin-top: 50px;
+  max-width: 1300px;
+  margin: 0 auto;
+  min-height: 800px;
+}
+
+.body-header {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto 50px;
+}
+
+.left-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.nutritionist-count {
+  font-size: 2.1rem;
+}
+
+.status {
+  padding-top: 10px;
+  color: #888780;
+  font-weight: 600;
+}
+
+.right-info button {
+  color:#888780;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: 1px solid black;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: all .5s ease;
+}
+
+.right-info button.active,
+.right-info button:hover {
+  color: white;
+  background-color: #00c853;
+  border: 1px solid white
+}

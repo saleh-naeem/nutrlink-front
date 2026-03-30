@@ -106,8 +106,7 @@ export async function bookAppointment(slotId) {
 export async function getCustomerAppointments() {
   try {
     const res = await api.get('/customer-appointments');
-    
-    // Axios already parsed the JSON, just return the data
+
     return res.data;
   } catch (error) {
     console.error("Error getting customer appointments:", error);
@@ -142,7 +141,7 @@ export async function cancelAppointment(appointmentId) {
   try {
     // We use .put() because we are updating the status back to 'available'
     const res = await api.put(`/cancel/${appointmentId}`);
-    
+
     return res.data;
   } catch (error) {
     console.error("Error canceling appointment:", error);
@@ -161,7 +160,7 @@ export async function cancelAppointment(appointmentId) {
 export async function getAvailableSlots(nutritionistId) {
   try {
     const res = await api.get(`/${nutritionistId}`);
-    
+
     return res.data;
   } catch (error) {
     console.error("Error getting available slots:", error);
@@ -176,7 +175,7 @@ export async function getAvailableSlots(nutritionistId) {
 export async function getAppointmentHistory() {
   try {
     const res = await api.get('/history');
-    
+
     // Axios handles the JSON parsing and status checks automatically
     return res.data;
   } catch (error) {
@@ -196,7 +195,7 @@ export async function getAppointmentHistory() {
 export async function getAllAppointments() {
   try {
     const res = await api.get('/admin/all');
-    
+
     // Axios handles the JSON parsing
     return res.data;
   } catch (error) {
