@@ -1,237 +1,70 @@
-//creat profile
-export async function creatProfile(info) {
-        const token = localStorage.getItem("authToken");
+import axios from 'axios'
 
-    try {
-        const isFormData = info instanceof FormData;
+const api = axios.create({
+  baseURL: 'http://localhost:5000/nutrlink/api/customer'
+})
 
-        const res = await fetch(
-            "http://localhost:5000/nutrlink/api/customer/profile",
-            {
-                method: "POST",
-                headers: isFormData
-                    ? undefined
-                    : { "Content-Type": "application/json" ,
-                         "Authorization": `Bearer ${token}`
-                    },
-                body: isFormData
-                    ? info
-                    : JSON.stringify({  
-                        age: info.age,
-                        gender: info.gender,
-                        height: info.height,
-                        currentWeight: info.currentWeight,
-                        targetWeight: info.targetWeight,
-                        allergies: info.allergies
-                    }),
-            }
-        );
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.message || "failed");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error(error);
-        throw error;
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('authToken')
+      window.location.href = '/'
     }
+
+    console.error('Global API Error:', error.response?.data?.message || error.message)
+
+    return Promise.reject(error)
+  })
+
+/* ── PROFILE FUNCTIONS ── */
+
+export const createProfile = async (info) => {
+  const payload = info instanceof FormData ? info : { ...info, startingWeight: info.currentWeight }
+  const { data } = await api.post('/profile', payload)
+  return data
 }
-//get the profile
-export async function getProfile() {
-        const token = localStorage.getItem("authToken");
 
-    try {
-
-        const res = await fetch(
-            "http://localhost:5000/nutrlink/api/customer/profile/me",
-           { headers:  { "Authorization": `Bearer ${token}` }}
-           
-        );
-        
-            if (res.status === 404) {
-                    return null;}
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.message || "failed to get the profile");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const getCustomerProfile = async () => {
+  try {
+    const { data } = await api.get('/profile/me')
+    return data
+  } catch (err) {
+    if (err.response?.status === 404) return null
+    throw err
+  }
 }
-//update profile
-export async function updateProfile(info) {
-        const token = localStorage.getItem("authToken");
 
-    try {
-        const isFormData = info instanceof FormData;
-
-        const res = await fetch(
-            "http://localhost:5000/nutrlink/api/customer/profile/me",
-            {
-                method: "PUT",
-                headers: isFormData
-                    ? undefined
-                    : { "Content-Type": "application/json" ,
-                         "Authorization": `Bearer ${token}`
-                    },
-                body: isFormData
-                    ? info
-                    : JSON.stringify({  
-                        age: info.age,
-                        gender: info.gender,
-                        height: info.height,
-                        currentWeight: info.currentWeight,
-                        targetWeight: info.targetWeight,
-                        allergies: info.allergies
-                    }),
-            }
-        );
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.message || "failed");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const updateCustomerProfile = async (info) => {
+  const { data } = await api.put('/profile/me', info)
+  return data
 }
-// creatgoal 
-export async function creategoal(info) {
-        const token = localStorage.getItem("authToken");
 
-    try {
-        const isFormData = info instanceof FormData;
 
-        const res = await fetch(
-            "http://localhost:5000/nutrlink/api/customer/goal",
-            {
-                method: "POST",
-                headers: isFormData
-                    ? undefined
-                    : { "Content-Type": "application/json" ,
-                         "Authorization": `Bearer ${token}`
-                    },
-                body: isFormData
-                    ? info
-                    : JSON.stringify({  
-                        data:info.data
-                    }),
-            }
-        );
+/* ── GOAL FUNCTIONS ── */
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.message || "failed");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const creategoal = async (info) => {
+  const { data } = await api.post('/goal', info)
+  return data
 }
-//make goal as done
-export async function goalDone(info) {
-        const token = localStorage.getItem("authToken");
 
-    try {
-        const isFormData = info instanceof FormData;
-
-        const res = await fetch(
-            "http://localhost:5000/nutrlink/api/customer/goal",
-            {
-                method: "PUT",
-                headers: 
-                    { "Content-Type": "application/json" ,
-                         "Authorization": `Bearer ${token}`
-                    },
-                body:
-                    JSON.stringify({  
-                        goal_id:info.goal_id
-                    }),
-            }
-        );
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.message || "failed");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const goalDone = async (goalId) => {
+  const { data } = await api.put('/goal/done', { goal_id: goalId })
+  return data
 }
-// delete goal 
-export async function deleteGoal(info) {
-        const token = localStorage.getItem("authToken");
 
-    try {
-        const isFormData = info instanceof FormData;
-
-        const res = await fetch(
-            `http://localhost:5000/nutrlink/api/customer/goal/${info}`,
-            {
-                method: "DELETE",
-                headers:  {   "Authorization": `Bearer ${token}`},
-            }
-        );
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.message || "failed");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const deleteGoal = async (goalId) => {
+  const { data } = await api.delete(`/goal/${goalId}`)
+  return data
 }
-//get all goals
-export async function getGoal() {
-        const token = localStorage.getItem("authToken");
 
-    try {
-        const res = await fetch(
-            "http://localhost:5000/nutrlink/api/customer/goal",
-            {
-                headers: {    "Authorization": `Bearer ${token}` },
-                
-            }
-        );
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.message || "failed");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const getGoals = async () => {
+  const { data } = await api.get('/goal')
+  return data
 }

@@ -1,0 +1,291 @@
+/* Container & Layout */
+.home-schedule {
+    max-width: 1200px;
+    width: 95%;
+    margin: 40px auto;
+    display: flex;
+    gap: 40px;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f0f0f0;
+    position: relative
+}
+
+.schedule-list-side {
+    flex: 1.2;
+}
+
+.schedule-info-side {
+    flex: 1;
+    background: #f9fbf9;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px dashed #e0e0e0;
+}
+
+/* Typography */
+h2 {
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+/* Appointment Card */
+.schedule-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.schedule-item {
+    background: #f8f9fa;
+    padding: 16px 20px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #edf2f7;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.schedule-item:hover {
+    background: #ffffff;
+    border-color: #27ae60;
+    transform: translateX(8px);
+    /* Slides right slightly on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Left Side: Avatar & Identity */
+.appt-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.appt-avatar {
+    width: 50px;
+    height: 50px;
+    background: #27ae60;
+    color: white;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    overflow: hidden;
+    /* CRITICAL: Clips the image to the border-radius */
+    flex-shrink: 0;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* CRITICAL: Prevents stretching/squishing */
+}
+
+.appt-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.target-name {
+    font-weight: 700;
+    color: #2d3436;
+    font-size: 1rem;
+}
+
+.appt-time {
+    color: #27ae60 !important;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* Right Side: Meta & Actions */
+.appt-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.appt-date {
+    font-size: 0.8rem;
+    color: #636e72 !important;
+    font-weight: 600;
+    background: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.details-btn {
+    padding: 6px 16px;
+    border: 1.5px solid #27ae60;
+    background: #ffffff;
+    color: #27ae60;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.details-btn:hover {
+    background: #27ae60;
+    color: white;
+}
+
+.view-button {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid #27ae60;
+    cursor: pointer;
+    background-color: transparent;
+    color: #27ae60;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+.view-button:hover {
+    background-color: #27ae60;
+    color: white;
+    transform: translateY(-3px); /* Small lift effect */
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+}
+
+.view-button:active {
+    transform: translateY(-1px);
+}
+
+/* Optional: styling for an icon if you add one later (e.g., FontAwesome arrow) */
+.view-button svg {
+    font-size: 1rem;
+}
+
+.modal-overlay {
+    position: fixed; /* Breaks out of .home-schedule to cover the WHOLE screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Darkens everything */
+    display: flex; /* Centers the content */
+    align-items: center;
+    justify-content: center;
+    z-index: 2000; /* Ensures it sits on top of everything */
+    backdrop-filter: blur(4px); /* Professional touch */
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 450px;
+    position: relative; /* Allows 'X' button to be absolute inside THIS box */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.close-x {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #f1f3f5;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.modal-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 15px 0;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.label {
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.value {
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.modal-footer {
+    margin-top: 25px;
+    display: flex;
+    gap: 12px;
+}
+
+/* Chat Button Styles */
+.chat-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #27ae60;
+    background: white;
+    color: #27ae60;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s;
+}
+
+.chat-btn:hover {
+    background: #f0fff4;
+    transform: translateY(-2px);
+}
+
+.join-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: #27ae60;
+    color: white;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.join-btn:hover {
+    background: #219150;
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}

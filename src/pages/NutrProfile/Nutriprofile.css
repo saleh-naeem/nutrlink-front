@@ -1,0 +1,318 @@
+:root {
+  --np-green-main: #22c55e;
+  --np-green-hover: #16a34a;
+  --np-bg-color: #f1f5f9;
+  --np-card-bg: #ffffff;
+  --np-text-main: #0f172a;
+  --np-text-muted: #64748b;
+  --np-border-light: #e2e8f0;
+}
+
+/* ── LAYOUT RESET ── */
+/* 1. REPLACE THIS BLOCK */
+.np-layout {
+  min-height: 100vh;
+  background-color: var(--np-bg-color);
+  padding-bottom: 80px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  /* Removed the flexbox rules that crushed the Navbar */
+}
+
+/* 2. REPLACE THIS BLOCK */
+.np-master-wrapper {
+  background-color: var(--np-card-bg);
+  width: 100%;
+  max-width: 1200px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--np-border-light);
+  margin: 40px auto 0; /* 'auto' pushes it to the exact center */
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* ── COVER PHOTO ── */
+.np-cover {
+  width: 100%;
+  height: 240px;
+  background-color: #cbd5e1;
+}
+.np-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── HEADER OVERLAP ── */
+.np-header-overlap {
+  display: flex;
+  align-items: flex-end;
+  padding: 0 40px 30px;
+  /* margin-top: -80px;  <-- DELETE THIS LINE */
+  border-bottom: 1px solid var(--np-border-light);
+  gap: 24px;
+}
+
+.np-avatar-container {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 6px solid var(--np-card-bg);
+  background-color: var(--np-green-main);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-top: -80px; /* <-- ADD IT HERE INSTEAD */
+}
+
+.np-avatar-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: absolute; 
+  top: 0;
+  left: 0;
+}
+.np-avatar-fallback {
+  font-size: 4rem;
+  color: white;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.np-header-info {
+  flex: 1;
+  padding-bottom: 10px;
+}
+.np-header-info h1 {
+  font-size: 2.2rem;
+  color: var(--np-text-main);
+  margin: 0 0 4px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: capitalize;
+}
+.np-header-subtitle {
+  color: var(--np-text-muted);
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+  font-style: italic;
+}
+.np-header-badges {
+  display: flex;
+  gap: 12px;
+}
+
+.np-header-actions {
+  align-self: center;
+  padding-bottom: 0;
+}
+
+/* ── TWO COLUMN BODY GRID ── */
+.np-body-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 32px;
+  padding: 40px;
+  background-color: #f8fafc;
+}
+
+/* ── SIDEBAR ── */
+.np-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.np-spec-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.np-spec-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--np-border-light);
+  color: var(--np-text-muted);
+  font-size: 0.95rem;
+}
+.np-spec-list li:last-child {
+  border-bottom: none;
+}
+.np-spec-icon {
+  margin-right: 8px;
+}
+
+/* ── MAIN CONTENT ── */
+.np-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.np-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.np-metric-card {
+  text-align: center;
+  padding: 30px;
+}
+.np-metric-card.np-highlight {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}
+.np-metric-label {
+  color: var(--np-text-muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.np-metric-value {
+  font-size: 3rem;
+  color: var(--np-text-main);
+  margin: 0;
+  font-weight: 800;
+  line-height: 1;
+}
+.np-highlight .np-metric-value {
+  color: var(--np-green-hover);
+}
+
+/* ── REUSABLE UI ELEMENTS ── */
+.np-modern-card {
+  background: var(--np-card-bg);
+  border: 1px solid var(--np-border-light);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.np-card-title {
+  font-size: 1.1rem;
+  color: var(--np-text-main);
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
+.np-btn-primary {
+  background-color: var(--np-green-main);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.np-btn-primary:hover {
+  background-color: var(--np-green-hover);
+}
+
+.np-badge {
+  padding: 6px 16px;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.np-badge--rating { background: #fef3c7; color: #b45309; }
+.np-badge--neutral { background: #f1f5f9; color: #475569; }
+
+.np-tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.np-tag {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 99px;
+  text-transform: capitalize;
+}
+.np-tag--green { background: #dcfce7; color: #15803d; }
+.np-tag--blue { background: #eff6ff; color: #1d4ed8; }
+
+.np-bio-text {
+  font-size: 1rem;
+  color: var(--np-text-muted);
+  line-height: 1.7;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ── EMPTY STATE ── */
+.np-empty-card {
+  background: var(--np-card-bg);
+  padding: 60px 40px;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid var(--np-border-light);
+}
+.np-empty-icon { font-size: 4rem; margin-bottom: 16px; }
+.np-empty-title { font-size: 1.8rem; margin: 0 0 10px; }
+.np-empty-desc { color: var(--np-text-muted); margin-bottom: 24px; }
+.np-empty-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+  text-align: left;
+  display: inline-flex;
+}
+.np-empty-feature {
+  background: #f8fafc;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* ── LOADER ── */
+.np-loader {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+.np-spinner-lg {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--np-border-light);
+  border-top-color: var(--np-green-main);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .np-body-grid {
+    grid-template-columns: 1fr;
+  }
+  .np-header-overlap {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px 20px;
+  }
+  .np-header-badges {
+    justify-content: center;
+  }
+  .np-metrics-row {
+    grid-template-columns: 1fr;
+  }
+}
