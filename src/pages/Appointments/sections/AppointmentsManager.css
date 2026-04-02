@@ -1,0 +1,267 @@
+/* 1. Main Container Setup */
+.appointments-manager {
+    width: 100%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* 2. Tab Navigation */
+.header-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 25px;
+}
+
+.tab-btn {
+    padding: 10px 28px;
+    background-color: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-btn:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e0;
+    color: #1e293b;
+}
+
+.tab-btn.active {
+    background-color: #1D9E75;
+    border-color: #1D9E75;
+    color: white;
+    box-shadow: 0 4px 12px rgba(29, 158, 117, 0.25);
+}
+
+/* 3. Create Slot Form Container */
+.create-slot-container {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 40px;
+    border-radius: 20px;
+    max-width: 480px;
+    margin: 0 auto;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+}
+
+.create-slot-container h3 {
+    margin-bottom: 30px;
+    color: #0f172a;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.create-slot-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* 4. Form Inputs & Cursors */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.form-group input {
+    padding: 14px 18px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #1e293b;
+    background-color: #f8fafc;
+    transition: all 0.2s;
+}
+
+/* Specific Cursor Fixes for Date/Time */
+.form-group input[type="time"],
+.form-group input[type="date"] {
+    cursor: pointer !important;
+}
+
+.form-group input[type="time"]::-webkit-datetime-edit,
+.form-group input[type="date"]::-webkit-datetime-edit,
+.form-group input[type="time"]::-webkit-calendar-picker-indicator,
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer !important;
+}
+
+.form-group input:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: #1D9E75;
+    box-shadow: 0 0 0 4px rgba(29, 158, 117, 0.1);
+}
+
+.time-picker-group {
+    display: flex;
+    gap: 20px;
+}
+
+.time-picker-group .form-group {
+    flex: 1;
+}
+
+/* 5. Submit Button */
+.submit-slot-btn {
+    margin-top: 10px;
+    background-color: #1D9E75;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.submit-slot-btn:hover {
+    background-color: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+}
+
+/* 6. Appointments Grid & Cards */
+.appointments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 10px 0;
+}
+
+.appointment-cards {
+    background-color: #ffffff;
+    border: 1px solid #eef2f6;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.appointment-cards:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+    border-color: #1D9E75;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.appt-date {
+    font-weight: 800;
+    color: #1e293b;
+    font-size: 16px;
+}
+
+/* 7. Status Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.status-badge.available { background-color: #d1fae5; color: #059669; }
+.status-badge.completed { background-color: #f1f5f9; color: #475569; }
+.status-badge.canceled { background-color: #fee2e2; color: #dc2626; }
+.status-badge.booked { background-color: #e0f2fe; color: #0369a1; }
+
+/* 8. Participant Info (History/Booked) */
+.participant-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background-color: #f8fafc;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+}
+
+.participant-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.participant-name {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 15px;
+}
+
+.time-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1D9E75;
+    font-size: 14px;
+    font-weight: 700;
+    background: rgba(29, 158, 117, 0.05);
+    padding: 8px 12px;
+    border-radius: 8px;
+    width: fit-content;
+}
+
+/* 9. Delete Button */
+.card-footer {
+    margin-top: 10px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 15px;
+}
+
+.delete-slot-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: transparent;
+    border: 1.5px solid #fda4af;
+    color: #e11d48;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.delete-slot-btn:hover {
+    background-color: #fff1f2;
+    border-color: #e11d48;
+}
+
+/* 10. Empty State */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background-color: #f8fafc;
+    border: 2px dashed #cbd5e0;
+    border-radius: 20px;
+    color: #64748b;
+    font-weight: 500;
+}

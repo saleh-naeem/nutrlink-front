@@ -7,7 +7,7 @@
 
 .hero-sidebar {
     flex: 1.8;
-    background-color: #e5e7eb;
+    background-color: #f8fafc;
     margin-right: 15px;
     border-radius: 10px;
     height: 650px;
@@ -36,7 +36,7 @@
     margin: 30px 50px 20px;
     top: 0;
     z-index: 10;
-    background-color: #e5e7eb; 
+    background-color: #f8fafc; 
     margin: 0; 
     padding: 20px 50px;
     width: 100%;
@@ -50,13 +50,13 @@
 .hero-main-view {
     flex: 1;
     margin-left: 15px;
-    background-color: #e5e7eb;
+    background-color: #f8fafc;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 10px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
+    border: 2px dashed #cbd5e0;
     height: fit-content;
     position: relative;
 }

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import AppointmentCard from '../../../component/AppointmentCard/AppointmentCard'
 import './AppointmentsHero.css'
 
-const AppointmentsHero = ({ appointments, role }) => {
+const AppointmentsHero = ({ appointments = [], role }) => {
   const [selectedAppt, setSelectedAppt] = useState(null)
   const navigate = useNavigate()
 
@@ -39,7 +39,7 @@ const AppointmentsHero = ({ appointments, role }) => {
 
       <div className="hero-main-view">
         {appointments.length < 3 && (
-          <div className="barear">d</div>
+          <div className="barear"></div>
         )}
         {selectedAppt ? (
           /* 4. This is your "Pop-up" inside the required space */
