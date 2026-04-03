@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../../AuthContext';
+import { showAlert } from '../../utils/alertService';
 import './NutritionistPageCards.css';
 
 const NutritionistPageCards = ({ nutritionist, onClick }) => {
@@ -22,7 +23,7 @@ const NutritionistPageCards = ({ nutritionist, onClick }) => {
   const handleCardClick = (e) => {
     e.stopPropagation();
     if (!isLogin) {
-      alert("Please login to book an appointment.");
+      showAlert('Authentication Required', 'Please login to book an appointment.', 'warning');
       return;
     }
     onClick()

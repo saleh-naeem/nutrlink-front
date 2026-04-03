@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './AppointmentsManager.css'
 import { createSlot, deleteSlot } from '../../../api/appointmetapi'
+import { showAlert, showConfirm } from '../../../utils/alertService'
 
 const AppointmentsManager = ({ appointments = [], role, refreshData }) => {
 
@@ -9,7 +10,15 @@ const AppointmentsManager = ({ appointments = [], role, refreshData }) => {
   const getFilteredAppointments = () => {
     switch (activeTab) {
       case 'history':
-        return appointments.filter(appt => appt.status === 'completed' || appt.status === 'canceled' || appt.status === 'booked')
+        return appointments.filter(appt => ['completed', 'canceled'].includes(appt.status))
+      // case 'history':
+      //   return appointments.filter(appt => {
+      //     const isCompleted = appt.status === 'completed';
+      //     // Only show canceled if there was a customer (meaning it was once booked)
+      //     const isActuallyCanceled = appt.status === 'canceled' && appt.customerId;
+
+      //     return isCompleted || isActuallyCanceled;
+      //   });
       case 'available':
         return appointments.filter(appt => appt.status === 'available')
       default:
@@ -29,7 +38,7 @@ const AppointmentsManager = ({ appointments = [], role, refreshData }) => {
     const endTimeRaw = formData.get('endTime')
 
     if (startTimeRaw >= endTimeRaw) {
-      alert("End time must be after the start time.")
+      showAlert('Invalid Time', 'End time must be after the start time.', 'error');
       return
     }
 
@@ -42,7 +51,7 @@ const AppointmentsManager = ({ appointments = [], role, refreshData }) => {
 
     try {
       await createSlot(newSlotData)
-      alert("Slot successfully published!")
+      showAlert('Success!', 'Slot successfully published!', 'success');
 
       if (refreshData) {
         await refreshData();
@@ -57,8 +66,13 @@ const AppointmentsManager = ({ appointments = [], role, refreshData }) => {
   };
 
   const handleDeleteSlot = async (slotId) => {
-    if (!window.confirm("Are you sure you want to delete this available slot?")) return
+    const result = await showConfirm(
+      "Are you sure?",
+      "Do you really want to delete this slot? This action cannot be undone.",
+      true
+    );
 
+    if (!result.isConfirmed) return;
     try {
       await deleteSlot(slotId)
 
@@ -136,14 +150,14 @@ const AppointmentsManager = ({ appointments = [], role, refreshData }) => {
             ) : (
               <div className="appointments-grid">
                 {filteredAppointments.map((appt) => {
-                  
+
                   const participant = role === 'nutritionist' ? appt.customerId : appt.nutritionistId
                   const isHistory = activeTab === 'history'
 
                   return (
                     <div key={appt._id} className="appointment-cards">
 
-                      <div className="card-header">
+                      <div className="card-headers">
                         <span className="appt-date">
                           {appt.date ? new Date(appt.date).toLocaleDateString() : 'N/A'}
                         </span>
@@ -156,15 +170,21 @@ const AppointmentsManager = ({ appointments = [], role, refreshData }) => {
 
                         {isHistory && participant && (
                           <div className="participant-info">
-                            <img src={participant.profilePic || '/default-avatar.png'} 
-                            alt="User" className='participant-img' />
+                            <img src={participant.profilePic || '/default-avatar.png'}
+                              alt="User" className='participant-img' />
                             <span className='participant-name'>{participant.username}</span>
                           </div>
                         )}
 
-                        <div className="time-row">
-                          <i className="clock-icon">🕒</i>
-                          <span className="appt-time">{appt.timeSlot}</span>
+                        <div className="card-footer-history">
+                          <div className="time-row">
+                            <i className="clock-icon">🕒</i>
+                            <span className="appt-time">{appt.timeSlot}</span>
+                          </div>
+                          {isHistory && participant && (
+                            <>
+                              <button className='history-delete-btn' onClick={() => handleDeleteSlot(appt._id)} >Remove</button></>
+                          )}
                         </div>
                       </div>
 

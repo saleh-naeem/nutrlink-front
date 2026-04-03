@@ -36,8 +36,8 @@
     margin: 30px 50px 20px;
     top: 0;
     z-index: 10;
-    background-color: #f8fafc; 
-    margin: 0; 
+    background-color: #f8fafc;
+    margin: 0;
     padding: 20px 50px;
     width: 100%;
 }
@@ -117,6 +117,7 @@
 }
 
 .details-info .username {
+    text-transform: capitalize;
     position: relative;
     margin: auto;
     top: 5px;
@@ -158,11 +159,22 @@
     margin-bottom: 20px;
 }
 
-.footer-info .session {
-    font-size: 1.2rem;
-    color: #575757;
-    font-style: italic;
+.cancel-appointment,
+.delete-appointment {
+    font-size: 0.85rem;
+    color: #e11d48;
+    background: #f8fafc;
+    padding: 0.5rem 1rem;
+    border: 1.5px solid #fda4af;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s all ease;
 }
+
+.cancel-appointment:hover, .delete-appointment:hover {
+    background-color: #fff1f2;
+    border-color: #e11d48;}
 
 .details-overlay-absolute .message,
 .details-overlay-absolute .see-profile {
@@ -181,9 +193,10 @@
     margin-left: 5px;
 }
 
-.message:hover, .see-profile:hover {
+.message:hover,
+.see-profile:hover {
     background-color: #10b981;
-    color:white
+    color: white
 }
 
 
@@ -199,4 +212,47 @@
     font-style: italic;
     color: #666;
     /* font-weight: 600; */
+}
+
+/* --- SweetAlert2 Custom Button Styles --- */
+
+.swal-btn-destructive {
+    background-color: #d33 !important; /* Red */
+    color: white !important;
+    padding: 10px 24px;
+    border-radius: 6px;
+    border: none;
+    margin: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.swal-btn-brand {
+    background-color: #00C853 !important; /* Your Brand Green */
+    color: white !important;
+    padding: 10px 24px;
+    border-radius: 6px;
+    border: none;
+    margin: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.swal-btn-cancel {
+    background-color: #757575 !important; /* Neutral Grey */
+    color: white !important;
+    padding: 10px 24px;
+    border-radius: 6px;
+    border: none;
+    margin: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Hover effects to make them feel interactive */
+.swal-btn-destructive:hover, .swal-btn-brand:hover, .swal-btn-cancel:hover {
+    filter: brightness(0.9);
+    transform: scale(1.02);
 }

@@ -1,95 +1,119 @@
-/* 1. Main Container Setup */
-.appointments-manager {
-    width: 100%;
-    max-width: 1000px;
-    margin: 40px auto;
-    padding: 0 20px;
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ── Variables ── */
+:root {
+    --green: #1D9E75;
+    --green-light: #d1fae5;
+    --green-glow: rgba(29, 158, 117, 0.18);
+    --green-dark: #147a5a;
+    --red: #e11d48;
+    --red-light: #fff1f2;
+    --slate-50: #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-400: #94a3b8;
+    --slate-600: #475569;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
 }
 
-/* 2. Tab Navigation */
+/* ── 1. Main Container ── */
+.appointments-manager {
+    width: 100%;
+    max-width: 1060px;
+    margin: 48px auto;
+    padding: 0 24px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── 2. Tab Navigation ── */
 .header-buttons {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-bottom: 40px;
-    border-bottom: 2px solid #f1f5f9;
-    padding-bottom: 25px;
+    gap: 10px;
+    margin-bottom: 44px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--slate-200);
 }
 
 .tab-btn {
-    padding: 10px 28px;
-    background-color: #ffffff;
-    border: 2px solid #e2e8f0;
-    border-radius: 30px;
-    font-size: 15px;
+    padding: 10px 26px;
+    background: #fff;
+    border: 1.5px solid var(--slate-200);
+    border-radius: 100px;
+    font-size: 14px;
     font-weight: 700;
-    color: #64748b;
+    color: var(--slate-600);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: 0.01em;
+    transition: all 0.2s ease;
 }
 
 .tab-btn:hover {
-    background-color: #f8fafc;
-    border-color: #cbd5e0;
-    color: #1e293b;
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(29, 158, 117, 0.04);
 }
 
 .tab-btn.active {
-    background-color: #1D9E75;
-    border-color: #1D9E75;
-    color: white;
-    box-shadow: 0 4px 12px rgba(29, 158, 117, 0.25);
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+    box-shadow: 0 4px 14px var(--green-glow);
 }
 
-/* 3. Create Slot Form Container */
+/* ── 3. Create Slot Form ── */
 .create-slot-container {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    padding: 40px;
-    border-radius: 20px;
+    background: #fff;
+    border: 1px solid var(--slate-200);
+    padding: 44px;
+    border-radius: 24px;
     max-width: 480px;
     margin: 0 auto;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
 }
 
 .create-slot-container h3 {
-    margin-bottom: 30px;
-    color: #0f172a;
+    margin-bottom: 32px;
+    color: var(--slate-900);
     text-align: center;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
+    letter-spacing: -0.02em;
 }
 
 .create-slot-form {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 22px;
 }
 
-/* 4. Form Inputs & Cursors */
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .form-group label {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
-    color: #475569;
+    color: var(--slate-600);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 .form-group input {
-    padding: 14px 18px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
+    padding: 13px 16px;
+    border: 1.5px solid var(--slate-200);
+    border-radius: 12px;
     font-size: 15px;
-    color: #1e293b;
-    background-color: #f8fafc;
+    color: var(--slate-800);
+    background: var(--slate-50);
+    font-family: 'Plus Jakarta Sans', sans-serif;
     transition: all 0.2s;
 }
 
-/* Specific Cursor Fixes for Date/Time */
 .form-group input[type="time"],
 .form-group input[type="date"] {
     cursor: pointer !important;
@@ -104,164 +128,251 @@
 
 .form-group input:focus {
     outline: none;
-    background-color: #ffffff;
-    border-color: #1D9E75;
+    background: #fff;
+    border-color: var(--green);
     box-shadow: 0 0 0 4px rgba(29, 158, 117, 0.1);
 }
 
 .time-picker-group {
     display: flex;
-    gap: 20px;
+    gap: 16px;
 }
 
 .time-picker-group .form-group {
     flex: 1;
 }
 
-/* 5. Submit Button */
 .submit-slot-btn {
-    margin-top: 10px;
-    background-color: #1D9E75;
-    color: white;
+    margin-top: 8px;
+    background: var(--green);
+    color: #fff;
     border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 700;
+    padding: 15px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     cursor: pointer;
-    transition: 0.3s;
+    letter-spacing: 0.01em;
+    transition: all 0.25s ease;
 }
 
 .submit-slot-btn:hover {
-    background-color: #059669;
+    background: var(--green-dark);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 10px 28px rgba(29, 158, 117, 0.3);
 }
 
-/* 6. Appointments Grid & Cards */
+/* ── 4. Appointments Grid ── */
 .appointments-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 25px;
-    padding: 10px 0;
+    gap: 20px;
+    padding: 4px 0;
 }
 
+/* ── 5. Card ── */
 .appointment-cards {
-    background-color: #ffffff;
-    border: 1px solid #eef2f6;
-    border-radius: 16px;
-    padding: 24px;
+    background: #fff;
+    border: 1px solid var(--slate-200);
+    border-radius: 20px;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    position: relative;
+}
+
+.appointment-cards::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green), #34d399);
+    opacity: 0;
+    transition: opacity 0.25s ease;
 }
 
 .appointment-cards:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
-    border-color: #1D9E75;
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.10);
+    border-color: rgba(29, 158, 117, 0.3);
 }
 
-.card-header {
+.appointment-cards:hover::before {
+    opacity: 1;
+}
+
+/* Card Header */
+.card-headers {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--slate-100);
+    background: var(--slate-50);
 }
 
 .appt-date {
     font-weight: 800;
-    color: #1e293b;
-    font-size: 16px;
+    color: var(--slate-900);
+    font-size: 15px;
+    letter-spacing: -0.01em;
 }
 
-/* 7. Status Badges */
+/* Card Body */
+.card-body {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+}
+
+/* ── 6. Status Badges ── */
 .status-badge {
-    padding: 6px 12px;
-    border-radius: 30px;
-    font-size: 11px;
+    padding: 4px 11px;
+    border-radius: 100px;
+    font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.07em;
 }
 
-.status-badge.available { background-color: #d1fae5; color: #059669; }
-.status-badge.completed { background-color: #f1f5f9; color: #475569; }
-.status-badge.canceled { background-color: #fee2e2; color: #dc2626; }
-.status-badge.booked { background-color: #e0f2fe; color: #0369a1; }
+.status-badge.available {
+    background: var(--green-light);
+    color: #059669;
+}
 
-/* 8. Participant Info (History/Booked) */
+.status-badge.completed {
+    background: var(--slate-100);
+    color: var(--slate-600);
+}
+
+.status-badge.canceled {
+    background: #fee2e2;
+    color: var(--red);
+}
+
+.status-badge.booked {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+/* ── 7. Participant Info ── */
 .participant-info {
     display: flex;
     align-items: center;
-    gap: 14px;
-    background-color: #f8fafc;
-    padding: 12px;
+    gap: 12px;
+    background: var(--slate-50);
+    padding: 11px 14px;
     border-radius: 12px;
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--slate-100);
 }
 
 .participant-img {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    flex-shrink: 0;
 }
 
 .participant-name {
+    text-transform: capitalize;
     font-weight: 700;
-    color: #0f172a;
-    font-size: 15px;
+    color: var(--slate-900);
+    font-size: 14px;
 }
+
+/* ── 8. Time Row ── */
+
+.card-footer-history {
+    display: flex;
+    justify-content: space-between;
+}
+
+.history-delete-btn {
+    width: 80px;
+    padding: 10px;
+    background: transparent;
+    border: 1.5px solid #fca5a5;
+    color: var(--red);
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: 0.01em;
+    transition: all 0.2s ease;
+}
+
+.history-delete-btn:hover {
+    background: var(--red-light);
+    border-color: var(--red);
+}
+
 
 .time-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    color: #1D9E75;
-    font-size: 14px;
+    gap: 8px;
+    font-size: 13px;
     font-weight: 700;
-    background: rgba(29, 158, 117, 0.05);
-    padding: 8px 12px;
-    border-radius: 8px;
+    color: var(--green);
+    background: rgba(29, 158, 117, 0.06);
+    padding: 9px 13px;
+    border-radius: 10px;
     width: fit-content;
+    border: 1px solid rgba(29, 158, 117, 0.12);
 }
 
-/* 9. Delete Button */
+.clock-icon {
+    font-style: normal;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* ── 9. Card Footer / Delete Button ── */
 .card-footer {
-    margin-top: 10px;
-    border-top: 1px solid #f1f5f9;
-    padding-top: 15px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--slate-100);
 }
 
 .delete-slot-btn {
     width: 100%;
     padding: 10px;
-    background-color: transparent;
-    border: 1.5px solid #fda4af;
-    color: #e11d48;
+    background: transparent;
+    border: 1.5px solid #fca5a5;
+    color: var(--red);
     border-radius: 10px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 14px;
-    transition: 0.2s;
+    font-size: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: 0.01em;
+    transition: all 0.2s ease;
 }
 
 .delete-slot-btn:hover {
-    background-color: #fff1f2;
-    border-color: #e11d48;
+    background: var(--red-light);
+    border-color: var(--red);
 }
 
-/* 10. Empty State */
+/* ── 10. Empty State ── */
 .empty-state {
     text-align: center;
     padding: 80px 20px;
-    background-color: #f8fafc;
-    border: 2px dashed #cbd5e0;
+    background: var(--slate-50);
+    border: 2px dashed var(--slate-200);
     border-radius: 20px;
-    color: #64748b;
-    font-weight: 500;
+    color: var(--slate-400);
+    font-weight: 600;
+    font-size: 15px;
 }

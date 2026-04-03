@@ -3,6 +3,7 @@ import { getProfileById } from '../../api/nutritionist';
 // Make sure this path matches your actual file structure for your appointments API
 import { getAvailableSlots, bookAppointment } from '../../api/appointmetapi';
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
+import { showAlert, showConfirm } from '../../utils/alertService';
 import './BookingModal.css';
 
 const BookingModal = ({ nutritionistId, onClose }) => {
@@ -138,10 +139,10 @@ const BookingModal = ({ nutritionistId, onClose }) => {
     if (selectedDate && selectedTimeSlotObj) {
       try {
         await bookAppointment(selectedTimeSlotObj._id);
-        alert("Booking successful!");
+        showAlert('Success', 'Booking successful!', 'success');
         onClose(); // Close modal upon success
       } catch (err) {
-        alert("Booking failed. Please try again.");
+        showAlert('Booking Failed', 'Please try again.', 'error');
         console.error(err);
       }
     }

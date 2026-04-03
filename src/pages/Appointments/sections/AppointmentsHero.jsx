@@ -1,90 +1,112 @@
+import Swal from 'sweetalert2'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { cancelAppointment } from '../../../api/appointmetapi'
+import { showAlert, showConfirm } from '../../../utils/alertService';
 import AppointmentCard from '../../../component/AppointmentCard/AppointmentCard'
 import './AppointmentsHero.css'
 
-const AppointmentsHero = ({ appointments = [], role }) => {
+const AppointmentsHero = ({ appointments = [], role, refreshData }) => {
   const [selectedAppt, setSelectedAppt] = useState(null)
   const navigate = useNavigate()
 
-  if (!appointments || appointments.length === 0)
-    return <div className="no-appointments">No upcoming sessions found</div>
-
+  // Removed early return to preserve the layout structure
 
   const isNutri = role === 'nutritionist'
   const target = isNutri ? selectedAppt?.customerId : selectedAppt?.nutritionistId
   const title = isNutri ? "" : 'Dr. '
   const targetRole = isNutri ? 'customer' : 'nutritionist';
 
+  const handleAppointmentCancel = async (appointmentId) => {
+    const result = await showConfirm('Are you sure?', 'This will cancel the booking.', true);
+
+    if (result.isConfirmed) {
+      try {
+        await cancelAppointment(appointmentId);
+        setSelectedAppt(null);
+        if (refreshData) refreshData();
+        showAlert('Success', 'Appointment cancelled.', 'success');
+      } catch (err) {
+        console.error("Action failed:", err);
+        showAlert('Error', err.response?.data?.message || 'Action failed', 'error');
+      }
+    }
+  };
+
   return (
     <div className="appointments-hero">
       <div className="hero-sidebar">
-        <h2 className='my-appointments' >My  Appointments</h2>
+        <h2 className='my-appointments'>My Appointments</h2>
         <div className="hero-scroll-list">
-          {appointments.map((appointment) => (
-            <AppointmentCard
-              key={appointment._id}
-              appointment={appointment}
-              role={role}
-              onSelect={() => {
-                if (selectedAppt?._id === appointment._id)
-                  setSelectedAppt(null)
-                else
-                  setSelectedAppt(appointment)
-              }}
-            />
-          ))}
+          {/* LOGIC CHANGE: Only toggle the list items, not the whole UI */}
+          {appointments && appointments.length > 0 ? (
+            appointments.map((appointment) => (
+              <AppointmentCard
+                key={appointment._id}
+                appointment={appointment}
+                role={role}
+                onSelect={() => {
+                  if (selectedAppt?._id === appointment._id)
+                    setSelectedAppt(null)
+                  else
+                    setSelectedAppt(appointment)
+                }}
+              />
+            ))
+          ) : (
+            <div className="no-appointments-sidebar">
+              No upcoming sessions found
+            </div>
+          )}
         </div>
       </div>
 
       <div className="hero-main-view">
-        {appointments.length < 3 && (
+        {appointments.length < 3 && appointments.length > 0 && (
           <div className="barear"></div>
         )}
+        
         {selectedAppt ? (
-          /* 4. This is your "Pop-up" inside the required space */
           <div className="details-overlay-absolute">
             <button onClick={() => setSelectedAppt(null)} className='exit-btn'>X</button>
             <div className="details-info">
               <div className="profile-image-wrapper">
                 <img src={target?.profilePic} alt="Profile" className="profile-pic" />
               </div>
-
               <div className="text-info">
-                <h3 className='username' >{title}{target?.username}</h3>
-                <h2 className='email' >{target?.email} </h2>
+                <h3 className='username'>{title}{target?.username}</h3>
+                <h2 className='email'>{target?.email}</h2>
               </div>
               <div className="devider"></div>
-
             </div>
 
-
             <div className="body-info">
-              <div className="date-info">Date: <span>{selectedAppt.date.split('T')[0]} </span></div>
-              <div className="time-info">Time: <span className='time'>{selectedAppt.timeSlot} </span></div>
+              <div className="date-info">Date: <span>{selectedAppt.date.split('T')[0]}</span></div>
+              <div className="time-info">Time: <span className='time'>{selectedAppt.timeSlot}</span></div>
             </div>
 
             <div className="footer-info">
               <div className="footer-left-info">
-                <h2 className='session'>Session 3</h2>
+                <button className="cancel-appointment" onClick={() => handleAppointmentCancel(selectedAppt._id)}>
+                  Cancel appointment
+                </button>
               </div>
-
               <div className="footer-right-info">
-                <button className='message'>message </button>
-                <button className='see-profile' onClick={() => navigate(`/${targetRole}/profile/${target?._id}`)} >see profile</button>
+                <button className='message'>message</button>
+                <button className='see-profile' onClick={() => navigate(`/${targetRole}/profile/${target?._id}`)}>see profile</button>
               </div>
-
-
             </div>
-
           </div>
         ) : (
           <div className="no-result-container">
-            <h2 className='no-result'>click over any appointments to see details</h2>
+            <h2 className='no-result'>
+              {appointments.length > 0 
+                ? "Click over any appointment to see details" 
+                : "Your schedule is currently empty"}
+            </h2>
           </div>
         )}
       </div>
-
     </div>
   )
 }

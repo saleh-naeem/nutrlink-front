@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import BookingModal from '../Bookingmodal/Bookingmodal';
 import { AuthContext } from '../../AuthContext';
+import { showAlert } from '../../utils/alertService';
 import './NutritionistHomeCards.css';
 
 const NutritionistCard = ({ nutritionist }) => {
@@ -23,7 +24,7 @@ const NutritionistCard = ({ nutritionist }) => {
   const handleCardClick = (e) => {
     e.stopPropagation();
     if (!isLogin) {
-      alert("Please login to book an appointment.");
+      showAlert('Authentication Required', 'Please login to book an appointment.', 'warning');
       return;
     }
     setIsModalOpen(true);
