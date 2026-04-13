@@ -1,0 +1,372 @@
+.video-call-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.call-status {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.video-grid {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.video-wrapper {
+  position: relative;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.remote-video-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.local-video-wrapper {
+  position: absolute;
+  bottom: 100px;
+  right: 20px;
+  width: 300px;
+  height: 225px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-label {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+
+.waiting-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  text-align: center;
+  padding: 20px;
+}
+
+.call-controls {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px 25px;
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+  z-index: 20;
+}
+
+.control-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+.control-btn.disabled {
+  background: rgba(239, 68, 68, 0.8);
+}
+
+.control-btn.disabled:hover {
+  background: rgba(239, 68, 68, 1);
+}
+
+.control-btn.active {
+  background: rgba(59, 130, 246, 0.8);
+}
+
+.control-btn.active:hover {
+  background: rgba(59, 130, 246, 1);
+}
+
+.end-call-btn {
+  background: rgba(239, 68, 68, 0.9);
+}
+
+.end-call-btn:hover {
+  background: rgba(220, 38, 38, 1);
+  transform: scale(1.1);
+}
+
+.settings-btn {
+  background: rgba(107, 114, 128, 0.8);
+}
+
+.settings-btn:hover {
+  background: rgba(107, 114, 128, 1);
+}
+
+.settings-panel {
+  position: absolute;
+  bottom: 120px;
+  right: 20px;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 24px;
+  min-width: 320px;
+  z-index: 30;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-panel h3 {
+  color: white;
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.setting-group {
+  margin-bottom: 20px;
+}
+
+.setting-group label {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.setting-group select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.setting-group select:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.setting-group select:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.setting-group select option {
+  background: #1a1a1a;
+  color: white;
+  padding: 10px;
+}
+
+.close-settings-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(59, 130, 246, 0.8);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.close-settings-btn:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: translateY(-2px);
+}
+
+.close-settings-btn:active {
+  transform: translateY(0);
+}
+
+.video-call-error {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-content {
+  background: rgba(30, 30, 30, 0.95);
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 500px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.error-content h2 {
+  color: #ef4444;
+  margin: 0 0 20px 0;
+  font-size: 24px;
+}
+
+.error-content p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 30px 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.error-content button {
+  padding: 12px 30px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(59, 130, 246, 0.8);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.error-content button:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: translateY(-2px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .local-video-wrapper {
+    width: 120px;
+    height: 90px;
+    bottom: 140px;
+    right: 10px;
+  }
+
+  .call-controls {
+    bottom: 20px;
+    padding: 12px 20px;
+    gap: 10px;
+  }
+
+  .control-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  .settings-panel {
+    bottom: 100px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+  }
+
+  .call-status {
+    top: 10px;
+    left: 10px;
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .local-video-wrapper {
+    width: 100px;
+    height: 75px;
+  }
+
+  .control-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .control-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .waiting-message {
+    font-size: 14px;
+    padding: 15px;
+  }
+}

@@ -3,7 +3,6 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useContext } from 'react';
 import { AuthContext } from './AuthContext';
 
-
 // NEW: Import your AuthProvider
 import { AuthProvider } from './AuthContext';
 
@@ -20,19 +19,18 @@ import { Updateprofile } from './pages/Profile/Updateprofile';
 import { Calculator } from './pages/Calculator/Calculator';
 import { Profile } from './pages/Profile/Profile';
 import { Aifull } from './pages/Aifull/Aifull';
-import AdminDashboard from './pages/Admindashboard/Admindashboard'
-import { NutriProfile } from './pages/NutrProfile/NutriProfile'
-import { NutriCreateProfile } from './pages/NutrProfile/Nutricreateprofile'
-import { Ndashboard } from './pages/Ndashboard/Ndashboard'
-import Nutritionists from './pages/Nutritionists/Nutritionists'
-
+import AdminDashboard from './pages/Admindashboard/Admindashboard';
+import { NutriProfile } from './pages/NutrProfile/NutriProfile';
+import { NutriCreateProfile } from './pages/NutrProfile/Nutricreateprofile';
+import { Ndashboard } from './pages/Ndashboard/Ndashboard';
+import Nutritionists from './pages/Nutritionists/Nutritionists';
+import VideoCall from './pages/videoCall';
 function App() {
-  const { loading } = useContext(AuthContext)
+  const { loading } = useContext(AuthContext);
 
   if (loading) {
     return <div className="full-screen-loader"> <Spinner /> </div>;
   }
-
 
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
@@ -54,14 +52,19 @@ function App() {
           {/* Role-based Profile Route */}
           <Route path="/profile" element={<RoleRoute role="customer"><Profile /></RoleRoute>} />
           <Route path="/Nprofile" element={<RoleRoute role="nutritionist"><NutriProfile /></RoleRoute>} />
-          <Route path="/Nprofile" element={<RoleRoute role="nutritionist"><NutriProfile /></RoleRoute>} />
-
 
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/Nprofile" element={<ProtectedRoute><NutriProfile /></ProtectedRoute>} />
           <Route path="/creatNprofile" element={<ProtectedRoute><NutriCreateProfile /></ProtectedRoute>} />
           <Route path="/Ndashboard" element={<ProtectedRoute><Ndashboard /></ProtectedRoute>} />
           <Route path="/Ai" element={<ProtectedRoute><Aifull /></ProtectedRoute>} />
+          
+          {/* NEW: Video Call Route */}
+          <Route 
+            path="/video-call/:appointmentId" 
+            element={<ProtectedRoute><VideoCall /></ProtectedRoute>} 
+          />
+
           <Route path="/admin"
             element={<AdminRoute><AdminDashboard /></AdminRoute>}
           />
