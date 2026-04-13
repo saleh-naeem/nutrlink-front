@@ -2,10 +2,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useContext } from 'react';
 import { AuthContext } from './AuthContext';
-
-// NEW: Import your AuthProvider
-import { AuthProvider } from './AuthContext';
-
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import { RegisterType } from './pages/RegisterType/RegisterType';
@@ -19,12 +15,16 @@ import { Updateprofile } from './pages/Profile/Updateprofile';
 import { Calculator } from './pages/Calculator/Calculator';
 import { Profile } from './pages/Profile/Profile';
 import { Aifull } from './pages/Aifull/Aifull';
-import AdminDashboard from './pages/Admindashboard/Admindashboard';
-import { NutriProfile } from './pages/NutrProfile/NutriProfile';
-import { NutriCreateProfile } from './pages/NutrProfile/Nutricreateprofile';
-import { Ndashboard } from './pages/Ndashboard/Ndashboard';
-import Nutritionists from './pages/Nutritionists/Nutritionists';
 import VideoCall from './pages/videoCall';
+import AdminDashboard from './pages/Admindashboard/Admindashboard'
+import { NutriProfile } from './pages/NutrProfile/NutriProfile'
+import { NutriCreateProfile } from './pages/NutrProfile/Nutricreateprofile'
+import { Ndashboard } from './pages/Ndashboard/Ndashboard'
+import Nutritionists from './pages/Nutritionists/Nutritionists'
+import Appointments from './pages/Appointments/Appointments'
+import ChatPage from './pages/Chat';
+
+
 function App() {
   const { loading } = useContext(AuthContext);
 
@@ -53,6 +53,11 @@ function App() {
           <Route path="/profile" element={<RoleRoute role="customer"><Profile /></RoleRoute>} />
           <Route path="/Nprofile" element={<RoleRoute role="nutritionist"><NutriProfile /></RoleRoute>} />
 
+          <Route path="/customer/profile/:userId" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/nutritionist/profile/:userId" element={<ProtectedRoute><NutriProfile /></ProtectedRoute>} />
+
+          <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/Nprofile" element={<ProtectedRoute><NutriProfile /></ProtectedRoute>} />
           <Route path="/creatNprofile" element={<ProtectedRoute><NutriCreateProfile /></ProtectedRoute>} />
@@ -65,9 +70,8 @@ function App() {
             element={<ProtectedRoute><VideoCall /></ProtectedRoute>} 
           />
 
-          <Route path="/admin"
-            element={<AdminRoute><AdminDashboard /></AdminRoute>}
-          />
+          <Route path="/appointments" element={<ProtectedRoute><Appointments /></ProtectedRoute>} />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>

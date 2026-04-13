@@ -1,10 +1,12 @@
 import { useState, useEffect, useContext } from "react";
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../../AuthContext";
 import { getCustomerAppointments, getNutritionistSchedule } from '../../api/appointmetapi';
 import './HomeSchedule.css'
 
 const HomeSchedule = () => {
   const { user, isLogin } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,25 +28,25 @@ const HomeSchedule = () => {
         let res;
 
         if (user.role === 'nutritionist') {
-          res = await getNutritionistSchedule('booked');
+          res = await getNutritionistSchedule();
         } else {
           res = await getCustomerAppointments();
         }
 
-        // If it's a customer, use .appointments. If it's a nutritionist, use .schedule.
         const allFetched = res?.appointments || res?.schedule || [];
 
-        // 1. Get current time and normalize it to the start of today
         const now = new Date();
         now.setHours(0, 0, 0, 0);
 
-        // 2. Filter: Keep only appointments that are today or in the future
+        // FIX: Added app.status === 'booked' to the filter
         const upcoming = allFetched.filter(app => {
           const appointmentDate = new Date(app.date);
-          return appointmentDate >= now;
+          const isTodayOrFuture = appointmentDate >= now;
+          const isActuallyBooked = app.status === 'booked';
+
+          return isTodayOrFuture && isActuallyBooked;
         });
 
-        // 3. Sort: Order them by date (closest to today first)
         const sorted = upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
 
         setAppointments(sorted.slice(0, 3));
@@ -60,7 +62,6 @@ const HomeSchedule = () => {
   }, [isLogin, user]);
 
   useEffect(() => {
-    // 1. If no modal is open, don't do anything
     if (!selectedAppt) return;
 
     const handleKeyDown = (e) => {
@@ -69,10 +70,7 @@ const HomeSchedule = () => {
       }
     };
 
-    // 2. Add the listener to the whole window
     window.addEventListener('keydown', handleKeyDown);
-
-    // 3. CRITICAL: Cleanup to avoid memory leaks
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
@@ -89,7 +87,6 @@ const HomeSchedule = () => {
         ) : appointments.length > 0 ? (
           <ul className="schedule-list">
             {appointments.map((app) => {
-
               const isNutri = user.role === 'nutritionist'
               const targetUser = isNutri ? app.customerId : app.nutritionistId;
               const title = isNutri ? "" : "Dr. "
@@ -105,14 +102,12 @@ const HomeSchedule = () => {
                           className="avatar-img"
                         />
                       ) : (
-                        /* Use targetUser here so the letter matches the actual user */
                         targetUser?.username?.charAt(0).toUpperCase() || "?"
                       )}
                     </div>
 
                     <div className="appt-details">
                       <span className="target-name">
-                        {/* Change: Remove the .user middleman */}
                         {title}{formatName(targetUser)}
                       </span>
                       <span className="appt-time">{app.timeSlot}</span>
@@ -127,7 +122,7 @@ const HomeSchedule = () => {
               )
             })}
             <div className="view-all">
-              <button className="view-button">View All</button>
+              <button className="view-button" onClick={() => navigate('/appointments')}>View All</button>
             </div>
           </ul>
         ) : (
@@ -144,13 +139,10 @@ const HomeSchedule = () => {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="close-x" onClick={closeModal}>&times;</button>
-
             <div className="modal-header">
               <h2>Appointment Details</h2>
             </div>
-
             <hr className="modal-divider" />
-
             <div className="modal-body">
               <div className="info-row">
                 <span className="label">Participant:</span>
@@ -174,13 +166,10 @@ const HomeSchedule = () => {
             </div>
 
             <div className="modal-footer">
-              {/* The Chat Button */}
-              <button className="chat-btn" onClick={() => console.log("Open Chat with:", selectedAppt._id)}>
+              <button className="chat-btn">
                 <span className="btn-icon">💬</span>
                 Send Message
               </button>
-
-              {/* Join Meeting Button (Optional but recommended) */}
               <button className="join-btn">Join Session</button>
             </div>
           </div>

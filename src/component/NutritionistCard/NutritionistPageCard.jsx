@@ -1,11 +1,9 @@
-import React, { useState, useContext } from 'react';
-import BookingModal from '../Bookingmodal/Bookingmodal';
+import React, { useContext } from 'react';
 import { AuthContext } from '../../AuthContext';
+import { showAlert } from '../../utils/alertService';
 import './NutritionistPageCards.css';
 
-const NutritionistPageCards = ({ nutritionist }) => {
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const NutritionistPageCards = ({ nutritionist, onClick }) => {
   const { user } = useContext(AuthContext);
   const isLogin = !!user;
 
@@ -25,15 +23,15 @@ const NutritionistPageCards = ({ nutritionist }) => {
   const handleCardClick = (e) => {
     e.stopPropagation();
     if (!isLogin) {
-      alert("Please login to book an appointment.");
+      showAlert('Authentication Required', 'Please login to book an appointment.', 'warning');
       return;
     }
-    setIsModalOpen(true);
+    onClick()
   };
 
   return (
     <>
-      <div className="nutritionist-card" onClick={handleCardClick} role="button">
+      <div className="nutritionist-card">
         <div className="card-image-wrapper">
           <img
             src={nutriUser?.profilePic}
@@ -117,18 +115,12 @@ const NutritionistPageCards = ({ nutritionist }) => {
                     {rating}
                   </p>
                 </div>
-                <button className="book">Book sessoin</button>
+                <button className="book" onClick={handleCardClick}>Book sessoin</button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <BookingModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        nutritionist={nutritionist}
-      />
     </>
   );
 };
