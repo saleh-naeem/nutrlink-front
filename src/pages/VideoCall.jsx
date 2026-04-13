@@ -27,6 +27,7 @@ const VideoCall = () => {
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
+  const hasJoinedRef = useRef(false);
 
   // State
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
@@ -83,6 +84,8 @@ const VideoCall = () => {
       };
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            console.log('🎥 Local stream obtained, video tracks:', stream.getVideoTracks().length);
+
       
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
@@ -98,10 +101,10 @@ const VideoCall = () => {
   };
 
   // Create peer connection
-  const createPeerConnection = () => {
+  const createPeerConnection = (targetSocketId) => {
     const peerConnection = new RTCPeerConnection(iceServers);
 
-    // Add local stream tracks to peer connection
+    // Add local stream tracks
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStreamRef.current);
@@ -110,46 +113,61 @@ const VideoCall = () => {
 
     // Handle remote stream
     peerConnection.ontrack = (event) => {
+      console.log('📺 Remote stream received');
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = event.streams[0];
       }
     };
 
-    // Handle ICE candidates
+    // Handle ICE candidates – use the provided targetSocketId
     peerConnection.onicecandidate = (event) => {
-      if (event.candidate && socketRef.current) {
+      if (event.candidate && socketRef.current && targetSocketId) {
+        console.log('📡 Sending ICE candidate to', targetSocketId);
         socketRef.current.emit('ice-candidate', {
-          to: remoteUser?.socketId,
+          to: targetSocketId,
           candidate: event.candidate
         });
       }
     };
 
-    // Handle connection state changes
+    // Log connection state
     peerConnection.onconnectionstatechange = () => {
-      console.log('Connection state:', peerConnection.connectionState);
-      switch (peerConnection.connectionState) {
-        case 'connected':
-          setCallStatus('Connected');
-          break;
-        case 'disconnected':
-          setCallStatus('Disconnected');
-          break;
-        case 'failed':
-          setCallStatus('Connection failed');
-          break;
-        default:
-          break;
+      console.log('🔌 Connection state:', peerConnection.connectionState);
+      if (peerConnection.connectionState === 'connected') {
+        setCallStatus('Connected');
+      } else if (peerConnection.connectionState === 'failed') {
+        setCallStatus('Connection failed');
       }
     };
 
     return peerConnection;
   };
 
+  //   // Handle connection state changes
+  //   peerConnection.onconnectionstatechange = () => {
+  //     console.log('Connection state:', peerConnection.connectionState);
+  //     switch (peerConnection.connectionState) {
+  //       case 'connected':
+  //         setCallStatus('Connected');
+  //         break;
+  //       case 'disconnected':
+  //         setCallStatus('Disconnected');
+  //         break;
+  //       case 'failed':
+  //         setCallStatus('Connection failed');
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   };
+
+  //   return peerConnection;
+  // };
+
   // Create and send offer
   const createOffer = async (socketId) => {
     try {
-      const peerConnection = createPeerConnection();
+      const peerConnection = createPeerConnection(socketId);
       peerConnectionRef.current = peerConnection;
 
       const offer = await peerConnection.createOffer();
@@ -167,7 +185,7 @@ const VideoCall = () => {
   // Handle incoming offer
   const handleOffer = async ({ from, offer }) => {
     try {
-      const peerConnection = createPeerConnection();
+      const peerConnection = createPeerConnection(from);
       peerConnectionRef.current = peerConnection;
 
       await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
@@ -391,16 +409,18 @@ const VideoCall = () => {
         // Connect to socket
         socketRef.current = io(SOCKET_URL);
 
-        socketRef.current.on('connect', () => {
+            socketRef.current.on('connect', () => {
           console.log('Socket connected:', socketRef.current.id);
           
-          socketRef.current.emit('join-room', {
-            roomId: appointmentId,
-            userId: user._id,
-            username: user.username
-          });
+          if (!hasJoinedRef.current) {
+            hasJoinedRef.current = true;
+            socketRef.current.emit('join-room', {
+              roomId: appointmentId,
+              userId: user._id,
+              username: user.username
+            });
+          }
         });
-
         // Socket event handlers
         socketRef.current.on('room-users', ({ participants }) => {
           if (participants.length > 0) {
@@ -469,6 +489,7 @@ const VideoCall = () => {
 
     // Cleanup
     return () => {
+         hasJoinedRef.current = false; 
       if (socketRef.current) {
         socketRef.current.disconnect();
       }

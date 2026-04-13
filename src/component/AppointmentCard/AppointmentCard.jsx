@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { isSessionLive } from '../../utils/isSessionLive'
 import './AppointmentCard.css'
+import JoinCallButton from "../JoinCallButton"
 
 const AppointmentCard = ({ appointment, role, onSelect }) => {
   const [isLive, setIsLive] = useState(false)
@@ -36,13 +37,14 @@ const AppointmentCard = ({ appointment, role, onSelect }) => {
         <span className='time'>{appointment.timeSlot}</span>
       </div>
       <div className="button-group">
-
         <button className="details-btn-hero" onClick={onSelect} >Details</button>
-        <button className={`start-btn-hero ${isLive ? 'active' : 'disabled'}`}
+        {/* <button className={`start-btn-hero ${isLive ? 'active' : 'disabled'}`}
           disabled={!isLive}
         >
           {isLive ? 'Join now' : 'Start Session'}
-        </button>
+        </button> */}
+        <JoinCallButton appointmentId={appointment._id} status={"booked"}></JoinCallButton>
+
       </div>
     </div>
   )

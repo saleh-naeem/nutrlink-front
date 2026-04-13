@@ -1,79 +1,92 @@
+/* Google Meet Style Video Call */
 .video-call-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #1a1a1a;
+  background: #202124; /* Google Meet dark background */
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
 }
 
 .call-status {
   position: absolute;
   top: 20px;
-  left: 20px;
-  background: rgba(0, 0, 0, 0.7);
+  left: 24px;
+  background: rgba(60, 64, 67, 0.9); /* Meet dark grey */
   color: white;
-  padding: 10px 20px;
-  border-radius: 20px;
+  padding: 8px 16px;
+  border-radius: 8px;
   font-size: 14px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 10px;
   z-index: 10;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
 }
 
 .status-dot {
   width: 8px;
   height: 8px;
-  background: #4ade80;
+  background: #8ab4f8; /* Meet blue */
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .video-grid {
   flex: 1;
   position: relative;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 80px); /* Leave room for bottom controls */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 24px 100px 24px;
+  box-sizing: border-box;
 }
 
 .video-wrapper {
   position: relative;
-  background: #000;
-  border-radius: 12px;
+  background: #3c4043;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* Made the video space smaller and centered rather than full-screen */
 .remote-video-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
+  max-width: 1100px;
+  aspect-ratio: 16 / 9;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .local-video-wrapper {
   position: absolute;
   bottom: 100px;
-  right: 20px;
-  width: 300px;
-  height: 225px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  right: 24px;
+  width: 240px; /* Meet standard PiP size */
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 10;
+  transition: box-shadow 0.3s ease;
+}
+
+.local-video-wrapper:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .video-element {
@@ -84,15 +97,15 @@
 
 .video-label {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
-  background: rgba(0, 0, 0, 0.7);
+  bottom: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.6);
   color: white;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
   font-weight: 500;
-  backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
 .waiting-message {
@@ -100,102 +113,99 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 18px;
+  color: #e8eaed;
+  font-size: 16px;
   text-align: center;
   padding: 20px;
+  font-weight: 500;
 }
 
+/* Meet style bottom bar */
 .call-controls {
   position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
   display: flex;
-  gap: 15px;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 15px 25px;
-  border-radius: 50px;
-  backdrop-filter: blur(10px);
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  background: #202124;
   z-index: 20;
 }
 
 .control-btn {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: #3c4043; /* Meet default grey */
+  color: #e8eaed;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  position: relative;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .control-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+  background: #4a4f54;
 }
 
 .control-btn:active {
   transform: scale(0.95);
 }
 
+/* Disabled (Muted/No Video) state -> Meet Red */
 .control-btn.disabled {
-  background: rgba(239, 68, 68, 0.8);
+  background: #ea4335; 
+  color: white;
 }
 
 .control-btn.disabled:hover {
-  background: rgba(239, 68, 68, 1);
+  background: #d93025;
 }
 
+/* Active states (e.g. Screen sharing is active) -> Meet Blue */
 .control-btn.active {
-  background: rgba(59, 130, 246, 0.8);
+  background: #8ab4f8; 
+  color: #202124;
 }
 
 .control-btn.active:hover {
-  background: rgba(59, 130, 246, 1);
+  background: #aecbfa;
 }
 
+/* Hang up -> Meet Red pill shape */
 .end-call-btn {
-  background: rgba(239, 68, 68, 0.9);
+  background: #ea4335;
+  width: 64px;
+  border-radius: 32px;
 }
 
 .end-call-btn:hover {
-  background: rgba(220, 38, 38, 1);
-  transform: scale(1.1);
-}
-
-.settings-btn {
-  background: rgba(107, 114, 128, 0.8);
-}
-
-.settings-btn:hover {
-  background: rgba(107, 114, 128, 1);
+  background: #d93025;
 }
 
 .settings-panel {
   position: absolute;
-  bottom: 120px;
-  right: 20px;
-  background: rgba(30, 30, 30, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
+  bottom: 90px;
+  right: 24px;
+  background: #28292c;
+  border-radius: 8px;
   padding: 24px;
   min-width: 320px;
   z-index: 30;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .settings-panel h3 {
-  color: white;
+  color: #e8eaed;
   margin: 0 0 20px 0;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .setting-group {
@@ -204,62 +214,44 @@
 
 .setting-group label {
   display: block;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
+  color: #9aa0a6;
+  font-size: 13px;
   margin-bottom: 8px;
   font-weight: 500;
 }
 
 .setting-group select {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.4);
-  color: white;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #5f6368;
+  background: #202124;
+  color: #e8eaed;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.setting-group select:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.5);
 }
 
 .setting-group select:focus {
   outline: none;
-  border-color: rgba(59, 130, 246, 0.5);
-  background: rgba(0, 0, 0, 0.6);
-}
-
-.setting-group select option {
-  background: #1a1a1a;
-  color: white;
-  padding: 10px;
+  border-color: #8ab4f8;
 }
 
 .close-settings-btn {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 4px;
   border: none;
-  background: rgba(59, 130, 246, 0.8);
-  color: white;
+  background: #8ab4f8;
+  color: #202124;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
   margin-top: 10px;
+  transition: background-color 0.2s;
 }
 
 .close-settings-btn:hover {
-  background: rgba(59, 130, 246, 1);
-  transform: translateY(-2px);
-}
-
-.close-settings-btn:active {
-  transform: translateY(0);
+  background: #aecbfa;
 }
 
 .video-call-error {
@@ -268,91 +260,55 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #1a1a1a;
+  background: #202124;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .error-content {
-  background: rgba(30, 30, 30, 0.95);
-  padding: 40px;
-  border-radius: 16px;
+  background: #28292c;
+  padding: 32px;
+  border-radius: 8px;
   text-align: center;
-  max-width: 500px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .error-content h2 {
-  color: #ef4444;
-  margin: 0 0 20px 0;
-  font-size: 24px;
+  color: #ea4335;
+  margin: 0 0 16px 0;
+  font-size: 20px;
 }
 
 .error-content p {
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0 0 30px 0;
-  font-size: 16px;
-  line-height: 1.6;
+  color: #e8eaed;
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .error-content button {
-  padding: 12px 30px;
-  border-radius: 8px;
+  padding: 10px 24px;
+  border-radius: 4px;
   border: none;
-  background: rgba(59, 130, 246, 0.8);
-  color: white;
+  background: #8ab4f8;
+  color: #202124;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.error-content button:hover {
-  background: rgba(59, 130, 246, 1);
-  transform: translateY(-2px);
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
   .local-video-wrapper {
-    width: 120px;
-    height: 90px;
-    bottom: 140px;
-    right: 10px;
+    width: 140px;
+    bottom: 90px;
+    right: 16px;
   }
 
   .call-controls {
-    bottom: 20px;
-    padding: 12px 20px;
-    gap: 10px;
-  }
-
-  .control-btn {
-    width: 48px;
-    height: 48px;
-  }
-
-  .settings-panel {
-    bottom: 100px;
-    right: 10px;
-    left: 10px;
-    min-width: auto;
-  }
-
-  .call-status {
-    top: 10px;
-    left: 10px;
-    font-size: 12px;
-    padding: 8px 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .local-video-wrapper {
-    width: 100px;
-    height: 75px;
+    gap: 12px;
   }
 
   .control-btn {
@@ -360,13 +316,22 @@
     height: 44px;
   }
 
-  .control-btn svg {
-    width: 20px;
-    height: 20px;
+  .settings-panel {
+    bottom: 90px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .local-video-wrapper {
+    width: 100px;
+    bottom: 85px;
+    right: 12px;
   }
 
-  .waiting-message {
-    font-size: 14px;
-    padding: 15px;
+  .video-grid {
+    padding: 16px 16px 80px 16px;
   }
 }
