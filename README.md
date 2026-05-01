@@ -697,20 +697,14 @@ const ProtectedRoute = ({ children }) => {
 - ✅ AI chatbot
 - ✅ Booking system
 
-### Phase 2 (In Development)
-- ⏳ Meal plan generator
-- ⏳ Progress tracking charts
-- ⏳ Payment integration
-- ⏳ Email notifications
-- ⏳ Video consultation feature
+### Phase 2 
+- ✅ Meal plan generator
+- ✅ Progress tracking charts
+- ✅ Payment integration
+- ✅ Email notifications
+- ✅ Video consultation feature
 .
 
-## 🔗 Links
-
-- **Website**: [https://nutrilink.com](https://nutrilink.com)
-- **Documentation**: [https://docs.nutrilink.com](https://docs.nutrilink.com)
-- **API Docs**: [https://api.nutrilink.com/docs](https://api.nutrilink.com/docs)
-- **Blog**: [https://blog.nutrilink.com](https://blog.nutrilink.com)
 
 ---
 
