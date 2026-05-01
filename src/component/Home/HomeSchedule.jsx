@@ -2,6 +2,9 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../../AuthContext";
 import { getCustomerAppointments, getNutritionistSchedule } from '../../api/appointmetapi';
+import { accessConversation } from '../../api/chatapi'; // FIX: Imported the chat API
+import { isSessionLive } from '../../utils/isSessionLive';
+import JoinCallButton from "../Joincallbutton";
 import './HomeSchedule.css'
 
 const HomeSchedule = () => {
@@ -10,9 +13,34 @@ const HomeSchedule = () => {
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedAppt, setSelectedAppt] = useState(null)
+  const [selectedAppt, setSelectedAppt] = useState(null);
+  const [isLive, setIsLive] = useState(false);
 
-  const closeModal = () => setSelectedAppt(null)
+  const closeModal = () => {
+    setSelectedAppt(null);
+    setIsLive(false);
+  };
+
+  // Check if the selected appointment session is live
+  useEffect(() => {
+    if (!selectedAppt) return;
+
+    const checkIsLive = () => {
+      const live = isSessionLive(selectedAppt.date, selectedAppt.timeSlot);
+      setIsLive(live);
+    };
+
+    checkIsLive();
+    const interval = setInterval(checkIsLive, 3000);
+
+    return () => clearInterval(interval);
+  }, [selectedAppt]);
+
+  const handleJoinSession = () => {
+    if (selectedAppt && isLive) {
+      navigate(`/video-call/${selectedAppt._id}`);
+    }
+  };
 
   const formatName = (u) => {
     if (!u?.username) return "User";
@@ -38,7 +66,6 @@ const HomeSchedule = () => {
         const now = new Date();
         now.setHours(0, 0, 0, 0);
 
-        // FIX: Added app.status === 'booked' to the filter
         const upcoming = allFetched.filter(app => {
           const appointmentDate = new Date(app.date);
           const isTodayOrFuture = appointmentDate >= now;
@@ -78,6 +105,17 @@ const HomeSchedule = () => {
 
   if (!isLogin) return null;
 
+  // FIX: Function now accepts the specific user ID when clicked
+  const handleMessageClick = async (targetUserId) => {
+    if (!targetUserId) return;
+    try {
+      const chatData = await accessConversation(targetUserId);
+      navigate('/chat', { state: { incomingChat: chatData } });
+    } catch (err) {
+      console.error('Error accessing chat:', err);
+    }
+  };
+
   return (
     <div className="home-schedule">
       <div className="schedule-list-side">
@@ -87,9 +125,9 @@ const HomeSchedule = () => {
         ) : appointments.length > 0 ? (
           <ul className="schedule-list">
             {appointments.map((app) => {
-              const isNutri = user.role === 'nutritionist'
+              const isNutri = user.role === 'nutritionist';
               const targetUser = isNutri ? app.customerId : app.nutritionistId;
-              const title = isNutri ? "" : "Dr. "
+              const title = isNutri ? "" : "Dr. ";
 
               return (
                 <li key={app._id} className="schedule-item">
@@ -116,7 +154,11 @@ const HomeSchedule = () => {
 
                   <div className="appt-meta">
                     <span className="appt-date">{new Date(app.date).toLocaleDateString()}</span>
-                    <button className="details-btn" onClick={() => setSelectedAppt(app)}>Details</button>
+                    <div className="">
+                      <button className="details-btn" onClick={() => setSelectedAppt(app)}>Details</button>
+                      {/* FIX: Passing the target user ID to the function */}
+                      <button className='message-btn' onClick={() => handleMessageClick(targetUser?._id)}>Message</button>
+                    </div>
                   </div>
                 </li>
               )
@@ -143,35 +185,49 @@ const HomeSchedule = () => {
               <h2>Appointment Details</h2>
             </div>
             <hr className="modal-divider" />
-            <div className="modal-body">
-              <div className="info-row">
-                <span className="label">Participant:</span>
-                <span className="value">
-                  {(() => {
-                    const isNutri = user.role === 'nutritionist';
-                    const target = isNutri ? selectedAppt.customerId : selectedAppt.nutritionistId;
-                    const title = isNutri ? "" : "Dr. ";
-                    return `${title}${formatName(target)}`;
-                  })()}
-                </span>
-              </div>
-              <div className="info-row">
-                <span className="label">Time:</span>
-                <span className="value">{selectedAppt.timeSlot}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">Date:</span>
-                <span className="value">{new Date(selectedAppt.date).toLocaleDateString()}</span>
-              </div>
-            </div>
 
-            <div className="modal-footer">
-              <button className="chat-btn">
-                <span className="btn-icon">💬</span>
-                Send Message
-              </button>
-              <button className="join-btn">Join Session</button>
-            </div>
+            {/* Compute target inside modal context */}
+            {(() => {
+              const isNutri = user.role === 'nutritionist';
+              const modalTarget = isNutri ? selectedAppt.customerId : selectedAppt.nutritionistId;
+              const modalTitle = isNutri ? "" : "Dr. ";
+
+              return (
+                <>
+                  <div className="modal-body">
+                    <div className="info-row">
+                      <span className="label">Participant:</span>
+                      <span className="value">
+                        {modalTitle}{formatName(modalTarget)}
+                      </span>
+                    </div>
+                    <div className="info-row">
+                      <span className="label">Time:</span>
+                      <span className="value">{selectedAppt.timeSlot}</span>
+                    </div>
+                    <div className="info-row">
+                      <span className="label">Date:</span>
+                      <span className="value">{new Date(selectedAppt.date).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+
+                  <div className="modal-footer">
+                    {/* FIX: Passing the target user ID to the function from the modal */}
+                    <button className="chat-btn" onClick={() => handleMessageClick(modalTarget?._id)}>
+                      <span className="btn-icon">💬</span>
+                      Send Message
+                    </button>
+                    <JoinCallButton
+                    classname="join-btn"
+                      appointmentId={selectedAppt._id}
+                      status={selectedAppt.status}
+                      isLive={isLive}
+                    />
+                  </div>
+                </>
+              );
+            })()}
+
           </div>
         </div>
       )}

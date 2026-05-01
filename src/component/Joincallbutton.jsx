@@ -9,11 +9,13 @@ import './JoinCallButton.css';
  * Usage in your appointment list/details:
  * <JoinCallButton appointmentId={appointment._id} status={appointment.status} />
  */
-const JoinCallButton = ({ appointmentId, status }) => {
+const JoinCallButton = ({ appointmentId, status, isLive }) => {
   const navigate = useNavigate();
 
   const handleJoinCall = () => {
-    navigate(`/video-call/${appointmentId}`);
+    if (isLive) {
+      navigate(`/video-call/${appointmentId}`);
+    }
   };
 
   // Only show button for booked appointments
@@ -22,13 +24,16 @@ const JoinCallButton = ({ appointmentId, status }) => {
   }
 
   return (
-    <button 
-      className="join-call-btn"
+    <button
+      // Apply your styles and dynamic classes here
+      className={`start-btn-hero ${isLive ? 'active' : 'disabled'}`}
       onClick={handleJoinCall}
-      title="Join video call"
+      disabled={!isLive}
+      title={isLive ? "Join video call" : "Session not started yet"}
     >
-      <Video size={18} />
-      <span>Join Call</span>
+      {/* Kept his icon but used your dynamic text */}
+      {isLive && <Video size={16} style={{ marginRight: '6px', display: 'inline' }} />}
+      {isLive ? 'Join now' : 'Start Session'}
     </button>
   );
 };

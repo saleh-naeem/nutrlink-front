@@ -45,17 +45,17 @@ const Appointments = () => {
     <div className='appointments-container'>
       <Navbar />
       <LoadingOverlay message="Loading my appointments..." isActive={loading} />
-      
-      {!loading && <AppointmentsHero 
-      appointments={upcomingAppointments} 
-      role={user?.role}
-      refreshData={refreshAppointmentsData} />}
-      
+
+      {!loading && <AppointmentsHero
+        appointments={upcomingAppointments}
+        role={user?.role}
+        refreshData={refreshAppointmentsData} />}
+
       {/* 3. Pass the newly hoisted function to the manager */}
-      <AppointmentsManager 
-        appointments={appointments} 
-        role={user?.role} 
-        refreshData={refreshAppointmentsData} 
+      <AppointmentsManager
+        appointments={appointments}
+        role={user?.role}
+        refreshData={refreshAppointmentsData}
       />
     </div>
   )

@@ -1,4 +1,4 @@
-.join-call-btn {
+/* .join-call-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -25,4 +25,34 @@
 
 .join-call-btn svg {
   stroke-width: 2.5;
+}
+ */
+
+
+.start-btn-hero {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s all ease;
+  font-size: 0.85rem;
+}
+
+.start-btn-hero.disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+  cursor: not-allowed;
+}
+
+.start-btn-hero.active {
+  background: #10b981; /* Solid Green */
+  color: white;
+  border: 1px solid #10b981;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+.start-btn-hero.active:hover {
+  background: #059669;
+  transform: scale(1.05);
 }

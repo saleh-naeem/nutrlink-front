@@ -38,12 +38,12 @@ const AppointmentCard = ({ appointment, role, onSelect }) => {
       </div>
       <div className="button-group">
         <button className="details-btn-hero" onClick={onSelect} >Details</button>
-        {/* <button className={`start-btn-hero ${isLive ? 'active' : 'disabled'}`}
-          disabled={!isLive}
-        >
-          {isLive ? 'Join now' : 'Start Session'}
-        </button> */}
-        <JoinCallButton appointmentId={appointment._id} status={"booked"}></JoinCallButton>
+        <JoinCallButton
+          appointmentId={appointment._id}
+          status={appointment.status}
+          isLive={isLive}
+        />
+        {/* <JoinCallButton appointmentId={appointment._id} status={"booked"}></JoinCallButton> */}
 
       </div>
     </div>

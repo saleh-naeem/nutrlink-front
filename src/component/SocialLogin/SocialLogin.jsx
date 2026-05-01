@@ -39,12 +39,14 @@ const SocialLogin = ({ role = 'customer', onSuccess }) => {
     }
   };
 
-  return (
+return (
     <div className="social-login">
       <GoogleLogin
         onSuccess={handleGoogleSuccess}
         onError={() => alert('Google authentication failed.')}
         useOneTap
+        // Explicitly request profile scope to get user's profile picture
+        scope="profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
       />
     </div>
   );
