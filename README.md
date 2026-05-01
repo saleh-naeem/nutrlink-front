@@ -523,18 +523,18 @@ VITE_LOG_LEVEL=debug
 
 ### Landing Page
 
-
+![Landing Page](./screenshot/landing-page.png)
 ### Profile Pages
-
+![Profile](./screenshot/Profile.png)
 
 ### Nutritionist Dashboard
-
+![Nutritionist Dashboard](./screenshot/Nutritionist-Dashboard.png)
 
 ### Booking System
-
+![Booking System](./screenshot/Booking-System.png)
 
 ### AI Chatbot
-
+![ AI Chatbot](./screenshot/Ai-chat.png)
 
 ## 🎨 Design Features
 
