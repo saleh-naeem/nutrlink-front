@@ -27,7 +27,7 @@ NutriLink is a modern web application that bridges the gap between health-consci
 
 **System Architecture**:
 - **Frontend**: React 18+ (this repository)
-- **Backend**: Node.js + Express + MongoDB ([Backend README](../nutrilink-backend/README.md))
+- **Backend**: Node.js + Express + MongoDB ([Backend README](https://github.com/saleh-naeem/nutrlink/blob/main/README.md))
 - **AI**: OpenAI GPT-4.1-mini integration
 - **Storage**: Cloudinary for images
 
@@ -204,15 +204,15 @@ nutrilink/
 ### Prerequisites
 
 - **Node.js** (v16 or higher)
-- **npm** or **yarn**
-- **Backend API server** running on `http://localhost:5000` (see [Backend README](../nutrilink-backend/README.md))
+- **npm**
+- **Backend API server** running on `http://localhost:5000` (see [Backend README](https://github.com/saleh-naeem/nutrlink/blob/main/README.md))
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/nutrilink.git
-   cd nutrilink
+   git clone https://github.com/saleh-naeem/nutrilink-front.git
+   cd nutrilink-front
    ```
 
 2. **Install dependencies**
@@ -233,8 +233,7 @@ nutrilink/
    
    **⚠️ Important**: 
    - The backend server must be running at `http://localhost:5000`
-   - See [Backend Setup Guide](../nutrilink-backend/README.md) for backend configuration
-   - Never commit your `.env` file to version control!
+   - See [Backend Setup Guide](https://github.com/saleh-naeem/nutrlink/blob/main/README.md) for backend configuration
 
 4. **Start the development server**
    ```bash
@@ -242,16 +241,8 @@ nutrilink/
    ```
 
 5. **Open your browser**
-   Navigate to `http://localhost:5173` (or the port shown in terminal)
-
-### Building for Production
-
-```bash
-npm run build
-```
-
-The optimized production build will be in the `dist/` folder.
-
+   Navigate to `http://localhost:5173`
+   
 ## 👥 User Roles
 
 ### 1. Customer
@@ -384,7 +375,7 @@ Target = TDEE + Goal Adjustment
 
 All API calls are made to the backend server running at `http://localhost:5000`.
 
-**📖 Complete API Documentation**: See [Backend README](../nutrilink-backend/README.md) for detailed endpoint documentation, request/response formats, and authentication details.
+**📖 Complete API Documentation**: See [Backend README](https://github.com/saleh-naeem/nutrlink/blob/main/README.md) for detailed endpoint documentation, request/response formats, and authentication details.
 
 ### Base URL
 ```javascript
@@ -531,40 +522,19 @@ VITE_LOG_LEVEL=debug
 ## 📸 Screenshots
 
 ### Landing Page
-- Hero section with value proposition
-- Feature highlights
-- Call-to-action buttons
 
-### Calorie Calculator
-- Interactive BMI visualization
-- Real-time calorie calculations
-- Goal-based recommendations
-- Animated progress indicators
 
 ### Profile Pages
-- Customer health dashboard
-- BMI tracking with color indicators
-- Weight journey visualization
-- Allergy and restriction management
+
 
 ### Nutritionist Dashboard
-- Professional profile showcase
-- Appointment calendar
-- Client management interface
-- Earnings tracking
+
 
 ### Booking System
-- Weekly calendar view
-- Time slot selection
-- Duration options (30/60 min)
-- Booking confirmation
+
 
 ### AI Chatbot
-- Floating chat bubble
-- Full-screen chat interface
-- Markdown-formatted responses
-- Conversation history
-- Multiple chat threads
+
 
 ## 🎨 Design Features
 
@@ -733,54 +703,7 @@ const ProtectedRoute = ({ children }) => {
 - ⏳ Payment integration
 - ⏳ Email notifications
 - ⏳ Video consultation feature
-
-### Phase 3 (Planned)
-- 📋 Mobile app (React Native)
-- 📋 Social features (Community)
-- 📋 Nutrition blog
-- 📋 Recipe database
-- 📋 Fitness tracker integration
-- 📋 Multi-language support
-- 📋 Advanced analytics dashboard
-
-## 🐛 Known Issues
-
-1. **File Upload**: Large images (>5MB) may fail on slow connections
-2. **Calendar**: Week navigation doesn't prevent past dates in all edge cases
-3. **AI Chat**: Long conversations may slow down on older devices
-4. **Mobile**: Some modals need better mobile optimization
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Coding Standards
-- Use functional components with hooks
-- Follow ESLint configuration
-- Write meaningful commit messages
-- Comment complex logic
-- Update documentation for new features
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👏 Acknowledgments
-
-- React team for the amazing framework
-- Google for OAuth integration
-- The nutrition and wellness community
-- All contributors and testers
-
-## 📞 Support
-
-For support, email support@nutrilink.com or join our Slack channel.
+.
 
 ## 🔗 Links
 
