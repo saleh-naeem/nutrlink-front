@@ -115,7 +115,7 @@ const NutritionistPageCards = ({ nutritionist, onClick }) => {
                     {rating}
                   </p>
                 </div>
-                <button className="book" onClick={handleCardClick}>Book sessoin</button>
+                <button className="book" onClick={handleCardClick}>Book session</button>
               </div>
             </div>
           </div>
