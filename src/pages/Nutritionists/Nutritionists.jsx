@@ -13,6 +13,9 @@ const Nutritionists = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [sort, setSort] = useState('rating')
+  const [page, setPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
+const limit = 5;
   const [filters, setFilters] = useState({
     specialization: '',
     maxPrice: '',
@@ -30,9 +33,17 @@ const Nutritionists = () => {
       try {
         setLoading(true);
         setError(null);
-        const queryParams = { ...filters, sortBy: sort };
-        const data = await getFilteredCards(queryParams);
-        setNutritionists(data.cards || []);
+     const queryParams = {
+  ...filters,
+  sortBy: sort,
+  page,
+  limit
+};
+
+const data = await getFilteredCards(queryParams);
+
+setNutritionists(data.cards || []);
+setTotalPages(data.totalPages || 1);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -46,7 +57,7 @@ const Nutritionists = () => {
     }, 500); // 500ms delay
 
     return () => clearTimeout(timer); // Cleanup: Cancels the fetch if user types again
-  }, [filters, sort]);
+  }, [filters, sort ,page]);
 
   // NEW: Add/remove body class to prevent scrolling when modal is open
   useEffect(() => {
@@ -60,9 +71,10 @@ const Nutritionists = () => {
     };
   }, [isLoginModalOpen]);
 
-  const handleFilterChange = (newFilterData) => {
-    setFilters((prev) => ({ ...prev, ...newFilterData }))
-  }
+ const handleFilterChange = (newFilterData) => {
+  setPage(1);
+  setFilters((prev) => ({ ...prev, ...newFilterData }));
+};
 
   // NEW: Handle login requirement from card
   const handleLoginRequired = () => {
@@ -116,8 +128,10 @@ const Nutritionists = () => {
                   type="button"
                   key={o.key}
                   className={`sort-btn ${sort === o.key ? 'active' : ''}`}
-                  onClick={() => setSort(o.key)}
-                >
+onClick={() => {
+  setPage(1);
+  setSort(o.key);
+}}                >
                   {o.label}
                 </button>
               ))}
@@ -144,6 +158,29 @@ const Nutritionists = () => {
               ))
             )}
           </div>
+          {totalPages > 1 && (
+  <div className="pagination">
+    <button
+      type="button"
+      disabled={page === 1}
+      onClick={() => setPage((prev) => prev - 1)}
+    >
+      Previous
+    </button>
+
+    <span>
+      Page {page} of {totalPages}
+    </span>
+
+    <button
+      type="button"
+      disabled={page === totalPages}
+      onClick={() => setPage((prev) => prev + 1)}
+    >
+      Next
+    </button>
+  </div>
+)}
         </div>
       </div>
 
