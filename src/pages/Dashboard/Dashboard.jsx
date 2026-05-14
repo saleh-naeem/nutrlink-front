@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { getCustomerProfile } from '../../api/customerapi';
+import { Link, useNavigate  } from 'react-router-dom';
 import { AuthContext } from '../../AuthContext';
 import Navbar from '../../component/Navigationbar/Navbar';
 import { NutrlinkLogo } from '../../component/Icons';
@@ -8,10 +9,9 @@ import {
   getsammury, getlogs, getlogtoday, creatlog,
   getCustomerAppointments, getClientDashboardStats
 } from "../../api/progressApi";
-import { getCustomerProfile } from '../../api/customerapi';
 import './Dashboard.css';
 
-const Dashboard = ({ clientId }) => {
+const Dashboard = ({ clientId, defaultTab = "overview", showAllSections = false }) => {
   const { user } = useContext(AuthContext);
   const [customer, setCustomer] = useState(null);
   const [summary, setSummary] = useState(null);
@@ -26,15 +26,19 @@ const Dashboard = ({ clientId }) => {
   const [showGoalInput, setShowGoalInput] = useState(false);
   const [chartPeriod, setChartPeriod] = useState(30);
   const [showLogForm, setShowLogForm] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+const [activeTab, setActiveTab] = useState(defaultTab);
   const [logForm, setLogForm] = useState({ waterIntake: '', exerciseMinutes: '', weight: '' });
+  const navigate = useNavigate();
 
 
   useEffect(() => {
+    // In peek mode the nutritionist has no customer profile —
+    // customer data comes from summary.profile via fetchDashboardData instead.
+    if (clientId) return;
+
     const fetchProfileData = async () => {
       try {
         setLoading(true);
-        // Call your API
         const data = await getCustomerProfile();
         setCustomer(data);
       } catch (err) {
@@ -45,7 +49,7 @@ const Dashboard = ({ clientId }) => {
     };
 
     fetchProfileData();
-  }, []);
+  }, [clientId]);
 
   useEffect(() => { fetchDashboardData(); }, [chartPeriod, clientId]);
 
@@ -55,6 +59,7 @@ const Dashboard = ({ clientId }) => {
       if (clientId) {
         const peekData = await getClientDashboardStats(clientId, chartPeriod);
         setSummary(peekData.summary);
+        if (peekData.summary?.profile) setCustomer(peekData.summary.profile);
         setTodayLog(peekData.todayLog || peekData.summary?.todayLog || null);
         setGoals(peekData.goals || []);
         setLogHistory(peekData.logs || []);
@@ -103,17 +108,32 @@ const Dashboard = ({ clientId }) => {
     } catch (error) { console.error(error); }
   };
 
-  const handleCreateGoal = async (e) => {
-    e.preventDefault();
-    if (!newGoal.trim()) return;
-    try {
-      const result = await creategoal({ data: newGoal });
-      setNewGoal('');
-      setShowGoalInput(false);
-      if (result.goals) setGoals(result.goals);
-      else fetchDashboardData();
-    } catch (error) { console.error(error); }
-  };
+const handleCreateGoal = async (e) => {
+  e.preventDefault();
+  if (!newGoal.trim()) return;
+
+  try {
+    const profile = await getCustomerProfile();
+
+    if (!profile) {
+      alert("Please create your profile first before adding a goal.");
+      navigate("/createprofile");
+      return;
+    }
+
+    const result = await creategoal({ data: newGoal });
+
+    setNewGoal('');
+    setShowGoalInput(false);
+
+    if (result.goals) setGoals(result.goals);
+    else fetchDashboardData();
+
+  } catch (error) {
+    console.error(error);
+    alert(error.response?.data?.message || "Failed to add goal");
+  }
+};;
 
   const handleCreateLog = async (e) => {
     e.preventDefault();
@@ -254,15 +274,15 @@ const Dashboard = ({ clientId }) => {
           <div className="db-sidebar__stats">
             <div className="db-quick-stat">
               <span className="db-quick-stat__label">Age</span>
-              <span className="db-quick-stat__val">{customer.age || '—'}<small> yr</small></span>
+              <span className="db-quick-stat__val">{customer?.age || '—'}<small> yr</small></span>
             </div>
             <div className="db-quick-stat">
               <span className="db-quick-stat__label">Height</span>
-              <span className="db-quick-stat__val">{customer.height || '—'}<small> cm</small></span>
+              <span className="db-quick-stat__val">{customer?.height || '—'}<small> cm</small></span>
             </div>
             <div className="db-quick-stat">
               <span className="db-quick-stat__label">Target</span>
-              <span className="db-quick-stat__val">{customer.targetWeight || '—'}<small> kg</small></span>
+              <span className="db-quick-stat__val">{customer?.targetWeight || '—'}<small> kg</small></span>
             </div>
           </div>
         </aside>
@@ -298,7 +318,7 @@ const Dashboard = ({ clientId }) => {
           {/* ════════════════════════════════
                OVERVIEW TAB
           ════════════════════════════════ */}
-          {activeTab === 'overview' && (
+          {(activeTab === 'overview' || showAllSections) && (
             <div className="db-content db-content--overview">
 
               {/* Weight + BMI Row */}
@@ -366,13 +386,12 @@ const Dashboard = ({ clientId }) => {
                 </div>
               </div>
 
-              {/* Stats Row */}
               <div className="db-kpi-row">
                 {[
                   { icon: '💧', label: "Today's Water", value: todayLog?.waterIntake || '—', unit: 'ml', color: '#60a5fa' },
                   { icon: '🏃', label: 'Exercise', value: todayLog?.exerciseMinutes || '—', unit: 'min', color: '#fbbf24' },
                   { icon: '🎯', label: 'Goals Done', value: goalsSummary.done || 0, unit: `/ ${goalsSummary.total || 0}`, color: '#34d399' },
-                  { icon: '📅', label: 'Next Appt', value: nextApptDate, unit: '', color: '#c084fc' },
+                  // { icon: '📅', label: 'Next Appt', value: appointments[0] ? new Date(appointments[0].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'None', unit: '', color: '#c084fc' },
                 ].map((kpi, i) => (
                   <div className="db-kpi" key={i} style={{ '--kpi-color': kpi.color }}>
                     <div className="db-kpi__icon">{kpi.icon}</div>
@@ -479,7 +498,7 @@ const Dashboard = ({ clientId }) => {
           {/* ════════════════════════════════
                ACTIVITY TAB
           ════════════════════════════════ */}
-          {activeTab === 'activity' && (
+          {(activeTab === 'activity' || showAllSections) && (
             <div className="db-content">
 
               {/* Log Form Modal */}

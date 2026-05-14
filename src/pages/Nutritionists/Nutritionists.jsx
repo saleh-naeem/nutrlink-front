@@ -5,6 +5,7 @@ import FilterBar from '../../component/FilterBar/FilterBar'
 import LoadingOverlay from "../../component/LoadingOverlay/LoadingOverlay"
 import NutritionistPageCards from "../../component/NutritionistCard/NutritionistPageCard"
 import BookingModal from '../../component/Bookingmodal/Bookingmodal';
+import LoginModal from '../../component/LoginModal/LoginModal'; // NEW: Import LoginModal
 import './Nutritionists.css'
 
 const Nutritionists = () => {
@@ -12,6 +13,9 @@ const Nutritionists = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [sort, setSort] = useState('rating')
+  const [page, setPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
+const limit = 5;
   const [filters, setFilters] = useState({
     specialization: '',
     maxPrice: '',
@@ -20,19 +24,26 @@ const Nutritionists = () => {
     search: ''
   })
 
-
   const [selectedId, setSelectedId] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // NEW: Login modal state
 
   useEffect(() => {
     const fetchExperts = async () => {
       try {
         setLoading(true);
         setError(null);
-        const queryParams = { ...filters, sortBy: sort };
-        const data = await getFilteredCards(queryParams);
-        setNutritionists(data.cards || []);
+     const queryParams = {
+  ...filters,
+  sortBy: sort,
+  page,
+  limit
+};
+
+const data = await getFilteredCards(queryParams);
+
+setNutritionists(data.cards || []);
+setTotalPages(data.totalPages || 1);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -46,10 +57,37 @@ const Nutritionists = () => {
     }, 500); // 500ms delay
 
     return () => clearTimeout(timer); // Cleanup: Cancels the fetch if user types again
-  }, [filters, sort]);
+  }, [filters, sort ,page]);
 
-  const handleFilterChange = (newFilterData) => {
-    setFilters((prev) => ({ ...prev, ...newFilterData }))
+  // NEW: Add/remove body class to prevent scrolling when modal is open
+  useEffect(() => {
+    if (isLoginModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isLoginModalOpen]);
+
+ const handleFilterChange = (newFilterData) => {
+  setPage(1);
+  setFilters((prev) => ({ ...prev, ...newFilterData }));
+};
+
+  // NEW: Handle login requirement from card
+  const handleLoginRequired = () => {
+    setIsLoginModalOpen(true);
+  }
+
+  // NEW: Handle successful login
+  const handleLoginSuccess = () => {
+    // After login, you can optionally open the booking modal automatically
+    // if there was a pending booking
+    if (selectedId) {
+      setIsModalOpen(true);
+    }
   }
 
   const SORT_OPTIONS = [
@@ -90,8 +128,10 @@ const Nutritionists = () => {
                   type="button"
                   key={o.key}
                   className={`sort-btn ${sort === o.key ? 'active' : ''}`}
-                  onClick={() => setSort(o.key)}
-                >
+onClick={() => {
+  setPage(1);
+  setSort(o.key);
+}}                >
                   {o.label}
                 </button>
               ))}
@@ -101,7 +141,6 @@ const Nutritionists = () => {
           {/* Loader, error, and cards swap in/out */}
           {error && <div className="error-msg">{error}</div>}
 
-
           <div className="cards">
             {nutritionists.length === 0 && !loading ? (
               <p className="no-results">No nutritionists found. Try adjusting your filters.</p>
@@ -110,6 +149,7 @@ const Nutritionists = () => {
                 <NutritionistPageCards
                   key={n._id}
                   nutritionist={n}
+                  onLoginRequired={handleLoginRequired} // NEW: Pass login handler
                   onClick={() => {
                     setSelectedId(n.user._id)
                     setIsModalOpen(true)
@@ -118,16 +158,49 @@ const Nutritionists = () => {
               ))
             )}
           </div>
+          {totalPages > 1 && (
+  <div className="pagination">
+    <button
+      type="button"
+      disabled={page === 1}
+      onClick={() => setPage((prev) => prev - 1)}
+    >
+      Previous
+    </button>
+
+    <span>
+      Page {page} of {totalPages}
+    </span>
+
+    <button
+      type="button"
+      disabled={page === totalPages}
+      onClick={() => setPage((prev) => prev + 1)}
+    >
+      Next
+    </button>
+  </div>
+)}
         </div>
       </div>
 
+      {/* Booking Modal */}
       {isModalOpen && (
         <BookingModal
-        nutritionistId = {selectedId}
-        onClose={() => {
-          setIsModalOpen(false)
-          setSelectedId(null)
-        }} />
+          nutritionistId={selectedId}
+          onClose={() => {
+            setIsModalOpen(false)
+            setSelectedId(null)
+          }}
+        />
+      )}
+
+      {/* NEW: Login Modal */}
+      {isLoginModalOpen && (
+        <LoginModal
+          onClose={() => setIsLoginModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
       )}
     </div >
   )

@@ -80,11 +80,10 @@ export async function updateProfile(info) {
 
 export async function getFilteredCards(filters = {}) {
   try {
-    // Convert filter object to query string: { maxPrice: 50 } -> ?maxPrice=50
     const params = new URLSearchParams(filters).toString();
     const response = await api.get(`/cards?${params}`);
-    
-    return response.data; // Returns { count, cards }
+
+    return response.data;
   } catch (error) {
     const message = error.response?.data?.message || "Could not fetch cards";
     throw new Error(message);
