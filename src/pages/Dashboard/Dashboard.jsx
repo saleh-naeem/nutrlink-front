@@ -202,6 +202,18 @@ const handleCreateGoal = async (e) => {
   const username = profile.user?.username || 'User';
   const initial = username.charAt(0).toUpperCase();
 
+
+  const activeAppointments = appointments.filter(
+    appt => appt.status?.toLowerCase() !== 'canceled' && appt.status?.toLowerCase() !== 'cancelled'
+  );
+
+  const nextAppt = activeAppointments[0];
+
+  // 3. Format the date
+  const nextApptDate = nextAppt
+    ? new Date(nextAppt.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    : 'None';
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: '◈' },
     { id: 'activity', label: 'Activity', icon: '◎' },
@@ -374,8 +386,7 @@ const handleCreateGoal = async (e) => {
                 </div>
               </div>
 
-              {/* Stats Row */}
-              {/* <div className="db-kpi-row">
+              <div className="db-kpi-row">
                 {[
                   { icon: '💧', label: "Today's Water", value: todayLog?.waterIntake || '—', unit: 'ml', color: '#60a5fa' },
                   { icon: '🏃', label: 'Exercise', value: todayLog?.exerciseMinutes || '—', unit: 'min', color: '#fbbf24' },
@@ -394,7 +405,7 @@ const handleCreateGoal = async (e) => {
                     <div className="db-kpi__glow"></div>
                   </div>
                 ))}
-              </div> */}
+              </div>
 
               {/* Next Appointment */}
               {/* Upcoming Appointments */}
