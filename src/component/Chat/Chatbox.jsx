@@ -168,7 +168,19 @@ const ChatBox = ({ selectedChat, setConversations, setSelectedChat }) => {
     );
   }
 
-  const formatTime = (ds) => new Date(ds).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formatMessageTime = (ds) => new Date(ds).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formatMessageDate = (ds) => {
+    const messageDate = new Date(ds);
+    const today = new Date();
+
+    const isToday = messageDate.toDateString() === today.toDateString();
+    const isYesterday = messageDate.toDateString() === new Date(today.setDate(today.getDate() - 1)).toDateString();
+
+    if (isToday) return null;
+    if (isYesterday) return "Yesterday";
+
+    return messageDate.toLocaleDateString([], { month: 'short', year: '2-digit' });
+  }
   const lastSeenValue = formatLastSeen(otherUser?.lastSeen);
 
   return (
@@ -211,16 +223,26 @@ const ChatBox = ({ selectedChat, setConversations, setSelectedChat }) => {
             return (
               <div key={m._id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                 <div
-                  className={`group relative max-w-[85%] md:max-w-[70%] px-4 py-2.5 rounded-2xl transition-all duration-200 cursor-pointer shadow-sm
-                    ${isMe ? 'bg-emerald-600 text-white rounded-tr-none hover:bg-emerald-700' : 'bg-white text-slate-800 rounded-tl-none hover:bg-slate-100 border border-slate-100'}`}
+                  className={`group relative max-w-[85%] md:max-w-[70%] px-4 py-2.5 rounded-2xl transition-all duration-200 shadow-sm
+                    ${isMe ? 'bg-emerald-600 text-white rounded-tr-none cursor-pointer hover:bg-emerald-700' : 'bg-white text-slate-800 rounded-tl-none hover:bg-slate-100 border border-slate-100'}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (isMe) setActiveMenuId(isMenuOpen ? null : m._id?.toString());
                   }}
                 >
                   <p className="text-sm leading-relaxed">{m.text}</p>
-                  <div className="flex items-center justify-end gap-1 mt-1">
-                    <span className={`text-[9px] ${isMe ? 'text-emerald-100' : 'text-slate-400'}`}>{formatTime(m.createdAt)}</span>
+                  <div className={`flex items-center gap-2 mt-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
+                    {/* Conditionally render the date */}
+                    {formatMessageDate(m.createdAt) && (
+                      <span className={`text-[9px] select-none ${isMe ? 'text-emerald-100' : 'text-slate-400'}`}>
+                        {formatMessageDate(m.createdAt)}
+                      </span>
+                    )}
+
+                    {/* Keep your existing time */}
+                    <span className={`text-[9px] select-none ${isMe ? 'text-emerald-100' : 'text-slate-400'}`}>
+                      {formatMessageTime(m.createdAt)}
+                    </span>
                   </div>
                   {isMe && isMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 z-50 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 min-w-[140px]">

@@ -182,6 +182,18 @@ const Dashboard = ({ clientId }) => {
   const username = profile.user?.username || 'User';
   const initial = username.charAt(0).toUpperCase();
 
+
+  const activeAppointments = appointments.filter(
+    appt => appt.status?.toLowerCase() !== 'canceled' && appt.status?.toLowerCase() !== 'cancelled'
+  );
+
+  const nextAppt = activeAppointments[0];
+
+  // 3. Format the date
+  const nextApptDate = nextAppt
+    ? new Date(nextAppt.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    : 'None';
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: '◈' },
     { id: 'activity', label: 'Activity', icon: '◎' },
@@ -360,7 +372,7 @@ const Dashboard = ({ clientId }) => {
                   { icon: '💧', label: "Today's Water", value: todayLog?.waterIntake || '—', unit: 'ml', color: '#60a5fa' },
                   { icon: '🏃', label: 'Exercise', value: todayLog?.exerciseMinutes || '—', unit: 'min', color: '#fbbf24' },
                   { icon: '🎯', label: 'Goals Done', value: goalsSummary.done || 0, unit: `/ ${goalsSummary.total || 0}`, color: '#34d399' },
-                  { icon: '📅', label: 'Next Appt', value: appointments[0] ? new Date(appointments[0].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'None', unit: '', color: '#c084fc' },
+                  { icon: '📅', label: 'Next Appt', value: nextApptDate, unit: '', color: '#c084fc' },
                 ].map((kpi, i) => (
                   <div className="db-kpi" key={i} style={{ '--kpi-color': kpi.color }}>
                     <div className="db-kpi__icon">{kpi.icon}</div>
