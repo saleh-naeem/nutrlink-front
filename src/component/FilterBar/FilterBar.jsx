@@ -3,7 +3,7 @@ import './FilterBar.css';
 
 const FilterBar = ({ onFilterChange, filters }) => {
   const [showSearch, setShowSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  // 🔴 REMOVED: const [searchQuery, setSearchQuery] = useState('');
 
   const specialties = [
     'All Specialties',
@@ -49,12 +49,12 @@ const FilterBar = ({ onFilterChange, filters }) => {
 
   const handleSearch = (e) => {
     const val = e.target.value;
-    setSearchQuery(val);
+    // 🟢 CHANGED: Directly pass value to parent callback
     if (onFilterChange) onFilterChange({ search: val });
   };
 
   const clearFilters = () => {
-    setSearchQuery('');
+    // 🔴 REMOVED: setSearchQuery('');
     if (onFilterChange) {
       onFilterChange({
         specialization: '',
@@ -66,9 +66,10 @@ const FilterBar = ({ onFilterChange, filters }) => {
     }
   };
 
+  // 🟢 CHANGED: Check the filters object directly for active search strings
   const hasActiveFilters =
     filters.specialization || filters.maxPrice ||
-    filters.yearsOfExperience || filters.languages || searchQuery
+    filters.yearsOfExperience || filters.languages || filters.search;
 
   return (
     <div className="filter-bar">
@@ -183,14 +184,14 @@ const FilterBar = ({ onFilterChange, filters }) => {
               type="text"
               className="search-input"
               placeholder="Search by name, specialty, or location..."
-              value={searchQuery}
+              value={filters.search || ''} // 🟢 CHANGED: Bound directly to props
               onChange={handleSearch}
             />
-            {searchQuery && (
+            {filters.search && (
               <button
                 className="clear-search-btn"
                 onClick={() => {
-                  setSearchQuery('')
+                  // 🟢 CHANGED: Clear via the prop callback
                   onFilterChange({ search: '' })
                 }}
               >
@@ -228,6 +229,13 @@ const FilterBar = ({ onFilterChange, filters }) => {
               <span className="filter-tag">
                 {filters.languages}
                 <button onClick={() => handleFilterChange('languages', '')}>×</button>
+              </span>
+            )}
+            {/* 🟢 ADDED: Visual tag for the current search item */}
+            {filters.search && (
+              <span className="filter-tag">
+                Search: "{filters.search}"
+                <button onClick={() => handleFilterChange('search', '')}>×</button>
               </span>
             )}
           </div>
