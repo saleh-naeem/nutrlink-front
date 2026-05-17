@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { updateCustomerProfile, getCustomerProfile } from "../../api/customerapi";
 import "../CreateProfile/CreateProfile";
-// IMPORTANT: Adjust this path to match where you saved your Swal functions
 import { showAlert } from "../../utils/alertService"; 
 
 export const Updateprofile = () => {
@@ -63,15 +62,24 @@ export const Updateprofile = () => {
     });
   };
 
-  /* ── Only send fields that have a value ── */
+  /* ── Only send fields that have a value & format numbers correctly ── */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     const payload = {};
+    
+    // Explicit list of fields we expect to be strict numbers
+    const numericFields = ["age", "height", "currentWeight", "targetWeight"];
+
     Object.entries(formData).forEach(([key, val]) => {
       if (val !== "" && val !== null && val !== undefined) {
-        payload[key] = val;
+        // 🟢 IMPROVEMENT: Convert numeric values from strings to true numbers before hitting MongoDB
+        if (numericFields.includes(key)) {
+          payload[key] = parseFloat(val);
+        } else {
+          payload[key] = val;
+        }
       }
     });
 
@@ -84,7 +92,6 @@ export const Updateprofile = () => {
     try {
       const result = await updateCustomerProfile(payload);
       console.log(result);
-      // Wait for the user to click OK before navigating away
       await showAlert("Success!", "Profile updated successfully.", "success");
       navigate("/profile");
     } catch (error) {
