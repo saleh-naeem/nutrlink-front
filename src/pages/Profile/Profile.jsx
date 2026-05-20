@@ -32,30 +32,23 @@ export const Profile = () => {
   }, []);
 
   const handleImageChange = async (e) => {
-    // 1. Grab the physical file the user selected
     const file = e.target.files[0];
-    if (!file) return; // If they cancel the selection, do nothing
+    if (!file) return;
 
-    // 2. Generate the instant local preview
     const previewUrl = URL.createObjectURL(file);
     setLocalAvatar(previewUrl);
-
-    // 3. Lock the UI
     setUploadingImage(true);
 
     try {
       const response = await updateProfilePicture(file);
-
-      // Update global context so the Navbar syncs instantly
       if (response && response.profilePic) {
         updateUserInfo({ profilePic: response.profilePic });
       }
     } catch (err) {
       console.error(err);
       alert("Failed to upload image. Please try again.");
-      setLocalAvatar(null); // Revert the preview if the upload crashes
+      setLocalAvatar(null);
     } finally {
-      // 5. Unlock the UI regardless of success or failure
       setUploadingImage(false);
     }
   };
@@ -83,7 +76,10 @@ export const Profile = () => {
   }
 
   // --- SAFE DATA EXTRACTION (Defensive Coding) ---
-  const { age = 0, gender = "N/A", height = 0, startingWeight = 0, currentWeight = 0, targetWeight = 0, allergies = [] } = data;
+  const { age = 0, gender = "N/A", height = 0, currentWeight = 0, targetWeight = 0, allergies = [] } = data;
+
+  // 🟢 THE ENDPOINT FIX: Fallback to currentWeight if startingWeight is missing or 0 in DB
+  const startingWeight = data.startingWeight || currentWeight;
 
   const bmi = height > 0 ? (currentWeight / ((height / 100) ** 2)).toFixed(1) : "0.0";
 
@@ -97,17 +93,35 @@ export const Profile = () => {
   };
   const bmiInfo = getBmiInfo(bmi);
 
-  const totalJourney = Math.abs(startingWeight - targetWeight);
-  const progressMade = Math.abs(startingWeight - currentWeight);
-  const progressPct = totalJourney > 0 ? Math.max(5, Math.min(100, (progressMade / totalJourney) * 100)) : 100;
-  const weightDiff = (currentWeight - targetWeight).toFixed(1);
+  // Determine the direction of the target goal
+  const isWeightLoss = startingWeight > targetWeight;
+  let progressPct = 0;
+  let weightRemaining = 0;
+  let isGoalAchieved = false;
+
+  if (isWeightLoss) {
+    // Weight Loss Math Engine
+    const totalJourney = startingWeight - targetWeight;
+    const progressMade = startingWeight - currentWeight;
+    progressPct = totalJourney > 0 ? (progressMade / totalJourney) * 100 : 100;
+    weightRemaining = currentWeight - targetWeight;
+    isGoalAchieved = currentWeight <= targetWeight;
+  } else {
+    // Weight Gain / Muscle Building Math Engine
+    const totalJourney = targetWeight - startingWeight;
+    const progressMade = currentWeight - startingWeight;
+    progressPct = totalJourney > 0 ? (progressMade / totalJourney) * 100 : 100;
+    weightRemaining = targetWeight - currentWeight;
+    isGoalAchieved = currentWeight >= targetWeight;
+  }
+
+  // Bound the percentage securely between 0% and 100% for the loading bar animation
+  const boundedProgressPct = Math.max(0, Math.min(100, progressPct));
 
   return (
     <>
       <Navbar />
       <div className="profile-layout">
-
-        {/* White Master Wrapper centered on page */}
         <div className="profile-master-wrapper">
 
           {/* --- COVER PHOTO --- */}
@@ -118,37 +132,22 @@ export const Profile = () => {
           {/* --- HEADER OVERLAP --- */}
           <div className="profile-header-overlap">
             <div className="avatar-container" style={{ position: 'relative', display: 'inline-block' }}>
-
               <img
                 src={localAvatar || data?.user?.profilePic || user?.profilePic || "https://via.placeholder.com/150"}
                 alt="Avatar"
                 style={{ opacity: uploadingImage ? 0.5 : 1, transition: "opacity 0.2s" }}
               />
-
               <button
                 onClick={() => fileInputRef.current.click()}
                 className="profile-change-btn"
                 aria-label="Update profile picture"
                 title="Update profile picture"
-                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
               >
-                {/* Professional SVG Camera Icon */}
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                   <circle cx="12" cy="13" r="4"></circle>
                 </svg>
               </button>
-
               <input
                 type="file"
                 ref={fileInputRef}
@@ -176,8 +175,6 @@ export const Profile = () => {
 
           {/* --- TWO COLUMN BODY GRID --- */}
           <div className="profile-body-grid">
-
-            {/* LEFT SIDEBAR (Static Specs & Allergies) */}
             <aside className="profile-sidebar">
               <div className="modern-card specs-card">
                 <h3 className="card-title">Personal Specs</h3>
@@ -198,9 +195,7 @@ export const Profile = () => {
               )}
             </aside>
 
-            {/* RIGHT MAIN CONTENT (Dynamic Health Metrics) */}
             <main className="profile-main">
-
               {/* Weight Overview */}
               <div className="metrics-row">
                 <div className="modern-card metric-card">
@@ -215,7 +210,6 @@ export const Profile = () => {
 
               {/* Advanced Modules (BMI & Journey) */}
               <div className="modules-grid">
-
                 {/* BMI Module */}
                 <div className="modern-card">
                   <h3 className="card-title">Body Mass Index</h3>
@@ -233,22 +227,22 @@ export const Profile = () => {
                   <h3 className="card-title">Goal Progress</h3>
                   <div className="journey-display">
                     <div className="j-endpoints">
+                      {/* 🟢 FIXED: Safely displays the starting benchmark instead of 0kg */}
                       <span className="j-start">{startingWeight}kg</span>
                       <span className="j-end">{targetWeight}kg</span>
                     </div>
                     <div className="progress-track">
-                      <div className="progress-fill green-fill" style={{ width: `${progressPct}%` }}></div>
+                      <div className="progress-fill green-fill" style={{ width: `${boundedProgressPct}%` }}></div>
                     </div>
                   </div>
                   <p className="journey-footer">
-                    {weightDiff > 0 ? `${weightDiff} kg remaining` : "🎉 Goal Achieved!"}
+                    {!isGoalAchieved ? `${weightRemaining.toFixed(1)} kg remaining` : "🎉 Goal Achieved!"}
                   </p>
                 </div>
-
               </div>
             </main>
-
           </div>
+
         </div>
       </div>
     </>

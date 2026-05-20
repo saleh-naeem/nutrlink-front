@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Calculator.css";
+import Navbar from '../../component/Navigationbar/Navbar';
 
 const ACTIVITY_OPTIONS = [
   { label: "Sedentary", sub: "Little or no exercise", value: 1.2 },
@@ -61,7 +62,9 @@ export function Calculator() {
   const goalBadge = goal < 0 ? "Cut" : goal > 0 ? "Bulk" : "Keep";
   const goalText = goal < 0 ? "for weight loss" : goal > 0 ? "for muscle gain" : "to maintain weight";
 
-  return (
+ return (
+  <>
+    <Navbar />
     <div className="cc-wrapper">
       <div className="cc-card">
         <div className="cc-header">
@@ -233,5 +236,6 @@ export function Calculator() {
         )}
       </div>
     </div>
-  );
+  </>
+);
 }
