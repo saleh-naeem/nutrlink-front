@@ -1,11 +1,14 @@
 import Navbar from "../../component/Navigationbar/Navbar";
 import FormField from "../../component/FormField/FormField";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../AuthContext";
 import { createProfile } from "../../api/customerapi";
 import "./CreateProfile.css";
+import { showAlert } from "../../utils/alertService";
 
 export const CreateProfile = () => {
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -14,11 +17,24 @@ export const CreateProfile = () => {
     height: "",
     currentWeight: "",
     targetWeight: "",
-    allergies: ""
+    allergies: [],
+    primaryGoal: ""
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleAllergyToggle = (allergyValue) => {
+    setFormData((prev) => {
+      const currentAllergies = prev.allergies || [];
+
+      if (currentAllergies.includes(allergyValue)) {
+        return { ...prev, allergies: currentAllergies.filter(item => item !== allergyValue) };
+      } else {
+        return { ...prev, allergies: [...currentAllergies, allergyValue] };
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -27,10 +43,17 @@ export const CreateProfile = () => {
     try {
       const result = await createProfile(formData);
       console.log(result);
-      alert("Profile saved successfully");
-      navigate("/profile");
+      await showAlert("Success!", "Profile updated successfully.", "success");
+      
+      if (user.role === "customer") {
+        navigate("/profile");
+      } else if (user.role === "nutritionist") {
+        navigate("/Nprofile");
+      } else {
+        navigate('/')
+      }
     } catch (error) {
-      alert(error.message);
+      showAlert("Update Failed", error.message, "error");
     } finally {
       setLoading(false);
     }
@@ -120,21 +143,64 @@ export const CreateProfile = () => {
               </div>
             </div>
 
-            {/* Allergies */}
-            <div>
-              <label className="cp-label" htmlFor="allergies">Allergies</label>
-              <select
-                id="allergies"
-                name="allergies"
-                value={formData.allergies}
-                onChange={handleChange}
-                className="cp-select"
-              >
-                <option value="">No allergies</option>
-                <option value="peanuts">Peanuts</option>
-                <option value="dairy">Dairy</option>
-              </select>
-            </div>
+            {user?.role === "customer" && (
+              <>
+                <div className="cp-field-group" style={{ marginBottom: '15px' }}>
+                  <label className="cp-label" htmlFor="primaryGoal">Primary Goal</label>
+                  <select
+                    id="primaryGoal"
+                    name="primaryGoal"
+                    value={formData.primaryGoal}
+                    onChange={handleChange}
+                    className="cp-select"
+                  >
+                    <option value="" disabled>Select your main goal</option>
+                    <option value="Weight Loss">Weight Loss</option>
+                    <option value="Muscle Building">Muscle Building</option>
+                    <option value="Clinical Nutrition">Clinical Nutrition</option>
+                    <option value="Sports Nutrition">Sports Nutrition</option>
+                    <option value="General Health">General Health</option>
+                    <option value="Diabetic Diet">Diabetic Diet</option>
+                    <option value="Pregnancy Nutrition">Pregnancy Nutrition</option>
+                    <option value="Vegan Nutrition">Vegan Nutrition</option>
+                  </select>
+                </div>
+
+                {/* Allergies */}
+                <div className="cp-field-group" style={{ marginBottom: '20px' }}>
+                  <label className="cp-label">Allergies</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+
+                    {['peanuts', 'tree nuts', 'dairy', 'eggs', 'soy', 'wheat', 'gluten', 'fish', 'shellfish', 'sesame'].map((allergy) => {
+                      const isSelected = formData.allergies?.includes(allergy);
+
+                      return (
+                        <div
+                          key={allergy}
+                          onClick={() => handleAllergyToggle(allergy)}
+                          style={{
+                            padding: '8px 16px',
+                            borderRadius: '8px',
+                            border: `2px solid ${isSelected ? '#10b981' : '#e5e7eb'}`,
+                            backgroundColor: isSelected ? '#d1fae5' : '#ffffff',
+                            color: isSelected ? '#065f46' : '#374151',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            textTransform: 'capitalize',
+                            transition: 'all 0.2s ease',
+                            userSelect: 'none'
+                          }}
+                        >
+                          {allergy}
+                        </div>
+                      );
+                    })}
+
+                  </div>
+                </div>
+              </>
+            )}
+
 
             {/* Submit */}
             <button type="submit" className="cp-btn" disabled={loading}>

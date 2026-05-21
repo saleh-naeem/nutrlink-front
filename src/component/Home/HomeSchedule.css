@@ -4,7 +4,7 @@
     width: 95%;
     margin: 40px auto;
     display: flex;
-    gap: 40px;
+    gap: 20px;
     background: #ffffff;
     padding: 40px;
     border-radius: 24px;
@@ -17,13 +17,8 @@
     flex: 1.2;
 }
 
-.schedule-info-side {
-    flex: 1;
-    background: #f9fbf9;
-    padding: 30px;
-    border-radius: 20px;
-    border: 1px dashed #e0e0e0;
-}
+/* .schedule-info-side {
+} */
 
 /* Typography */
 .schedule-info-side h2 {

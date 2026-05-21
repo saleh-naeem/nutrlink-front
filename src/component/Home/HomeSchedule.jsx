@@ -2,12 +2,24 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../../AuthContext";
 import { getCustomerAppointments, getNutritionistSchedule } from '../../api/appointmetapi';
-import { accessConversation } from '../../api/chatapi'; // FIX: Imported the chat API
+import { accessConversation } from '../../api/chatapi';
 import { isSessionLive } from '../../utils/isSessionLive';
+import HealthSnapshot from "./HealthSnapshot";
 import JoinCallButton from "../Joincallbutton";
 import './HomeSchedule.css'
 
-const HomeSchedule = () => {
+// ── CHANGE 1: Accept the calculated metrics as props here ──
+const HomeSchedule = ({
+  currentWeight,
+  targetWeight,
+  weightPct,
+  remaining,
+  waterIntake,
+  exerciseMinutes,
+  goalsDone,
+  goalsTotal,
+  height
+}) => {
   const { user, isLogin } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -21,7 +33,6 @@ const HomeSchedule = () => {
     setIsLive(false);
   };
 
-  // Check if the selected appointment session is live
   useEffect(() => {
     if (!selectedAppt) return;
 
@@ -105,7 +116,6 @@ const HomeSchedule = () => {
 
   if (!isLogin) return null;
 
-  // FIX: Function now accepts the specific user ID when clicked
   const handleMessageClick = async (targetUserId) => {
     if (!targetUserId) return;
     try {
@@ -119,7 +129,7 @@ const HomeSchedule = () => {
   return (
     <div className="home-schedule">
       <div className="schedule-list-side">
-        <h2>Your Upcoming Sessions</h2>
+        <h2 className="text-[1.4rem] font-extrabold text-gray-900 tracking-tight">Your Upcoming Sessions</h2>
         {loading ? (
           <p>Loading...</p>
         ) : appointments.length > 0 ? (
@@ -156,7 +166,6 @@ const HomeSchedule = () => {
                     <span className="appt-date">{new Date(app.date).toLocaleDateString()}</span>
                     <div className="">
                       <button className="details-btn" onClick={() => setSelectedAppt(app)}>Details</button>
-                      {/* FIX: Passing the target user ID to the function */}
                       <button className='message-btn' onClick={() => handleMessageClick(targetUser?._id)}>Message</button>
                     </div>
                   </div>
@@ -172,10 +181,18 @@ const HomeSchedule = () => {
         )}
       </div>
 
-      <div className="schedule-info-side">
-        <h2>Your Progress</h2>
-        <p>More stuff goes here (Stats, Goals, etc.)</p>
-      </div>
+      {/* ── CHANGE 2: Forward all received props into HealthSnapshot ── */}
+      <HealthSnapshot
+        currentWeight={currentWeight}
+        targetWeight={targetWeight}
+        weightPct={weightPct}
+        remaining={remaining}
+        waterIntake={waterIntake}
+        exerciseMinutes={exerciseMinutes}
+        goalsDone={goalsDone}
+        goalsTotal={goalsTotal}
+        height={height}
+      />
 
       {selectedAppt && (
         <div className="modal-overlay" onClick={closeModal}>
@@ -186,7 +203,6 @@ const HomeSchedule = () => {
             </div>
             <hr className="modal-divider" />
 
-            {/* Compute target inside modal context */}
             {(() => {
               const isNutri = user.role === 'nutritionist';
               const modalTarget = isNutri ? selectedAppt.customerId : selectedAppt.nutritionistId;
@@ -212,13 +228,12 @@ const HomeSchedule = () => {
                   </div>
 
                   <div className="modal-footer">
-                    {/* FIX: Passing the target user ID to the function from the modal */}
                     <button className="chat-btn" onClick={() => handleMessageClick(modalTarget?._id)}>
                       <span className="btn-icon">💬</span>
                       Send Message
                     </button>
                     <JoinCallButton
-                    classname="join-btn"
+                      classname="join-btn"
                       appointmentId={selectedAppt._id}
                       status={selectedAppt.status}
                       isLive={isLive}

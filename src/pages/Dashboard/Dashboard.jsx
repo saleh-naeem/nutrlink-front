@@ -1,8 +1,10 @@
 import { useState, useEffect, useContext } from 'react';
 import { getCustomerProfile } from '../../api/customerapi';
-import { Link, useNavigate  } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthContext';
 import Navbar from '../../component/Navigationbar/Navbar';
+import WeightJourneyCard from '../../component/DashboardShared/WeightJourneyCard';
+import KpiRow from '../../component/DashboardShared/KpiRow';
 import { NutrlinkLogo } from '../../component/Icons';
 import {
   getdite, getGoal, goalDone, deleteGoal, creategoal,
@@ -26,7 +28,7 @@ const Dashboard = ({ clientId, defaultTab = "overview", showAllSections = false 
   const [showGoalInput, setShowGoalInput] = useState(false);
   const [chartPeriod, setChartPeriod] = useState(30);
   const [showLogForm, setShowLogForm] = useState(false);
-const [activeTab, setActiveTab] = useState(defaultTab);
+  const [activeTab, setActiveTab] = useState(defaultTab);
   const [logForm, setLogForm] = useState({ waterIntake: '', exerciseMinutes: '', weight: '' });
   const navigate = useNavigate();
 
@@ -108,32 +110,32 @@ const [activeTab, setActiveTab] = useState(defaultTab);
     } catch (error) { console.error(error); }
   };
 
-const handleCreateGoal = async (e) => {
-  e.preventDefault();
-  if (!newGoal.trim()) return;
+  const handleCreateGoal = async (e) => {
+    e.preventDefault();
+    if (!newGoal.trim()) return;
 
-  try {
-    const profile = await getCustomerProfile();
+    try {
+      const profile = await getCustomerProfile();
 
-    if (!profile) {
-      alert("Please create your profile first before adding a goal.");
-      navigate("/createprofile");
-      return;
+      if (!profile) {
+        alert("Please create your profile first before adding a goal.");
+        navigate("/createprofile");
+        return;
+      }
+
+      const result = await creategoal({ data: newGoal });
+
+      setNewGoal('');
+      setShowGoalInput(false);
+
+      if (result.goals) setGoals(result.goals);
+      else fetchDashboardData();
+
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "Failed to add goal");
     }
-
-    const result = await creategoal({ data: newGoal });
-
-    setNewGoal('');
-    setShowGoalInput(false);
-
-    if (result.goals) setGoals(result.goals);
-    else fetchDashboardData();
-
-  } catch (error) {
-    console.error(error);
-    alert(error.response?.data?.message || "Failed to add goal");
-  }
-};;
+  };;
 
   const handleCreateLog = async (e) => {
     e.preventDefault();
@@ -325,30 +327,12 @@ const handleCreateGoal = async (e) => {
               <div className="db-row db-row--hero">
 
                 {/* Weight Journey Card */}
-                <div className="db-card db-card--weight">
-                  <div className="db-card__label">Weight Journey</div>
-                  <div className="db-weight-hero">
-                    <div className="db-weight-big">
-                      <span className="db-weight-num">{currentWeight}</span>
-                      <span className="db-weight-unit">kg</span>
-                    </div>
-                    <div className="db-weight-arrow">→</div>
-                    <div className="db-weight-big db-weight-big--target">
-                      <span className="db-weight-num">{targetWeight}</span>
-                      <span className="db-weight-unit">kg goal</span>
-                    </div>
-                  </div>
-                  <div className="db-weight-track">
-                    <div className="db-weight-track__bar">
-                      <div className="db-weight-track__fill" style={{ width: `${weightPct}%` }}></div>
-                      <div className="db-weight-track__thumb" style={{ left: `${weightPct}%` }}></div>
-                    </div>
-                    <div className="db-weight-track__info">
-                      <span>{weightPct.toFixed(0)}% to goal</span>
-                      <span>{remaining.toFixed(1)} kg remaining </span>
-                    </div>
-                  </div>
-                </div>
+                <WeightJourneyCard
+                  currentWeight={currentWeight}
+                  targetWeight={targetWeight}
+                  weightPct={weightPct}
+                  remaining={remaining}
+                />
 
                 {/* BMI Card */}
                 <div className="db-card db-card--bmi" style={{ '--bmi-color': bmiData.color, '--bmi-gradient': bmiData.gradient }}>
@@ -386,26 +370,14 @@ const handleCreateGoal = async (e) => {
                 </div>
               </div>
 
-              <div className="db-kpi-row">
-                {[
-                  { icon: '💧', label: "Today's Water", value: todayLog?.waterIntake || '—', unit: 'ml', color: '#60a5fa' },
-                  { icon: '🏃', label: 'Exercise', value: todayLog?.exerciseMinutes || '—', unit: 'min', color: '#fbbf24' },
-                  { icon: '🎯', label: 'Goals Done', value: goalsSummary.done || 0, unit: `/ ${goalsSummary.total || 0}`, color: '#34d399' },
-                  // { icon: '📅', label: 'Next Appt', value: appointments[0] ? new Date(appointments[0].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'None', unit: '', color: '#c084fc' },
-                ].map((kpi, i) => (
-                  <div className="db-kpi" key={i} style={{ '--kpi-color': kpi.color }}>
-                    <div className="db-kpi__icon">{kpi.icon}</div>
-                    <div className="db-kpi__body">
-                      <span className="db-kpi__label">{kpi.label}</span>
-                      <div className="db-kpi__val-row">
-                        <span className="db-kpi__val">{kpi.value}</span>
-                        <span className="db-kpi__unit">{kpi.unit}</span>
-                      </div>
-                    </div>
-                    <div className="db-kpi__glow"></div>
-                  </div>
-                ))}
-              </div>
+              <KpiRow
+                waterIntake={todayLog?.waterIntake}
+                exerciseMinutes={todayLog?.exerciseMinutes}
+                goalsDone={goalsSummary?.done}
+                goalsTotal={goalsSummary?.total}
+                nextApptDate={appointments[0] ? new Date(appointments[0].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'None'}
+              />
+
 
               {/* Next Appointment */}
               {/* Upcoming Appointments */}

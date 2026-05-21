@@ -243,3 +243,81 @@
     width: 100%;
   }
 }
+
+/* ── NEW NUTRITIONIST FIELDS ── */
+
+/* Textarea for Bio */
+.cp-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 0.92rem;
+  color: #111827;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  outline: none;
+  font-family: inherit;
+  min-height: 120px;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cp-textarea:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+  background-color: #fff;
+}
+
+/* ── PILL SELECTION UI ── */
+/* Used for Allergies, Specializations, and Languages */
+
+.pill-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.pill {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #4b5563;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  text-transform: capitalize;
+}
+
+.pill:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+/* Active State (Green Theme) */
+.pill.active {
+  color: #166534;
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
+/* ── ADDITIONAL INPUT STYLING ── */
+/* Ensures text inputs match the styling of FormField if used directly */
+.cp-input {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 0.92rem;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.cp-input:focus {
+  border-color: #22c55e;
+  background-color: #fff;
+}

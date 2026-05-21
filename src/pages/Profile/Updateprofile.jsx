@@ -1,92 +1,116 @@
 import Navbar from "../../component/Navigationbar/Navbar";
 import FormField from "../../component/FormField/FormField";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { updateCustomerProfile, getCustomerProfile } from "../../api/customerapi";
-import "../CreateProfile/CreateProfile";
-// IMPORTANT: Adjust this path to match where you saved your Swal functions
-import { showAlert } from "../../utils/alertService"; 
+import { AuthContext } from "../../AuthContext";
+import { showAlert } from "../../utils/alertService";
+
+// Import both APIs with aliases to avoid naming conflicts
+import * as customerAPI from "../../api/customerapi";
+import * as nutritionistAPI from "../../api/nutritionist";
 
 export const Updateprofile = () => {
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+
+  // Combined state for all possible fields
   const [formData, setFormData] = useState({
     age: "",
     gender: "",
+    // Customer Only
     height: "",
     currentWeight: "",
     targetWeight: "",
-    allergies: [], 
-    primaryGoal: "" 
+    allergies: [],
+    primaryGoal: "",
+    // Nutritionist Only
+    specialization: [],
+    bio: "",
+    cardBio: "",
+    yearsOfExperience: "",
+    languages: [],
+    price: ""
   });
 
-  /* ── Pre-fill the form with the user's existing profile ── */
+  const isNutri = user?.role === "nutritionist";
+
+  /* ── Load existing data based on role ── */
   useEffect(() => {
-    async function loadProfile() {
+    async function loadData() {
       try {
-        const p = await getCustomerProfile();
+        // Use correct API based on role
+        const p = isNutri 
+          ? await nutritionistAPI.getProfile() 
+          : await customerAPI.getCustomerProfile();
+
         if (p) {
           setFormData({
+            ...formData, // Keep default empty strings for missing fields
             age: p.age ?? "",
             gender: p.gender ?? "",
             height: p.height ?? "",
             currentWeight: p.currentWeight ?? "",
             targetWeight: p.targetWeight ?? "",
             allergies: Array.isArray(p.allergies) ? p.allergies : [],
-            primaryGoal: p.primaryGoal ?? "" 
+            primaryGoal: p.primaryGoal ?? "",
+            specialization: Array.isArray(p.specialization) ? p.specialization : [],
+            bio: p.bio ?? "",
+            cardBio: p.cardBio ?? "",
+            yearsOfExperience: p.yearsOfExperience ?? "",
+            languages: Array.isArray(p.languages) ? p.languages : [],
+            price: p.price ?? ""
           });
         }
       } catch (err) {
-        console.error("Could not load profile for pre-fill:", err);
+        console.error("Fetch Error:", err);
       } finally {
         setFetching(false);
       }
     }
-    loadProfile();
-  }, []);
+    loadData();
+  }, [isNutri]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  /* ── Toggle handler for pill UI ── */
-  const handleAllergyToggle = (allergyValue) => {
+  /* ── Generic toggle for arrays (Allergies, Specs, Languages) ── */
+  const handleToggleArray = (field, value) => {
     setFormData((prev) => {
-      const currentAllergies = prev.allergies || [];
-      
-      if (currentAllergies.includes(allergyValue)) {
-        return { ...prev, allergies: currentAllergies.filter(item => item !== allergyValue) };
-      } else {
-        return { ...prev, allergies: [...currentAllergies, allergyValue] };
-      }
+      const current = prev[field] || [];
+      const updated = current.includes(value)
+        ? current.filter(i => i !== value)
+        : [...current, value];
+      return { ...prev, [field]: updated };
     });
   };
 
-  /* ── Only send fields that have a value ── */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const payload = {};
-    Object.entries(formData).forEach(([key, val]) => {
-      if (val !== "" && val !== null && val !== undefined) {
-        payload[key] = val;
-      }
-    });
-
-    if (Object.keys(payload).length === 0) {
-      showAlert("No Changes", "Please update at least one field.", "warning");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const result = await updateCustomerProfile(payload);
-      console.log(result);
-      // Wait for the user to click OK before navigating away
+      if (isNutri) {
+        // Send nutritionist specific payload
+        await nutritionistAPI.updateProfile({
+          specialization: formData.specialization,
+          bio: formData.bio,
+          cardBio: formData.cardBio,
+          yearsOfExperience: formData.yearsOfExperience,
+          languages: formData.languages,
+          price: formData.price,
+          age: formData.age,
+          gender: formData.gender
+        });
+      } else {
+        // Send customer specific payload
+        await customerAPI.updateCustomerProfile(formData);
+      }
+
       await showAlert("Success!", "Profile updated successfully.", "success");
-      navigate("/profile");
+      navigate(isNutri ? "/Nprofile" : "/profile");
     } catch (error) {
       showAlert("Update Failed", error.message, "error");
     } finally {
@@ -94,182 +118,90 @@ export const Updateprofile = () => {
     }
   };
 
-  if (fetching) {
-    return (
-      <div className="cp-page">
-        <Navbar />
-        <div className="cp-loader">
-          <div className="cp-spinner-lg" />
-          <p>Loading your profile…</p>
-        </div>
-      </div>
-    );
-  }
+  if (fetching) return <div className="cp-loader"><Navbar /><p>Loading profile...</p></div>;
 
   return (
     <div className="cp-page">
       <Navbar />
-
       <div className="cp-wrapper">
         <div className="cp-card">
-
           <div className="cp-header">
-            <div className="cp-icon">✏️</div>
-            <h1 className="cp-title">Update Your Profile</h1>
-            <p className="cp-subtitle">Change any field you'd like to update</p>
+            <h1 className="cp-title">Update {isNutri ? 'Expert' : 'Health'} Profile</h1>
           </div>
 
           <form onSubmit={handleSubmit} className="cp-form">
-
+            {/* COMMON FIELDS: Age & Gender */}
             <div className="cp-row">
+              <FormField label="Age" name="age" type="number" value={formData.age} onChange={handleChange} required />
               <div className="cp-field-group">
-                <FormField
-                  label="Age"
-                  id="age"
-                  type="number"
-                  name="age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  placeholder="e.g. 25"
-                  min="12"
-                  max="120"
-                  required
-                />
-              </div>
-
-              <div className="cp-field-group">
-                <label className="cp-label" htmlFor="gender">Gender</label>
-                <select
-                  id="gender"
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  className="cp-select"
-                >
-                  <option value="">Select gender</option>
+                <label className="cp-label">Gender</label>
+                <select name="gender" value={formData.gender} onChange={handleChange} className="cp-select">
+                  <option value="">Select</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </select>
               </div>
             </div>
 
-            <FormField
-              label="Height (cm)"
-              id="height"
-              type="number"
-              name="height"
-              value={formData.height}
-              onChange={handleChange}
-              placeholder="e.g. 173"
-              min="100"
-              max="250"
-            />
+            {/* CONDITIONAL RENDERING: CUSTOMER FIELDS */}
+            {!isNutri && (
+              <>
+                <FormField label="Height (cm)" name="height" type="number" value={formData.height} onChange={handleChange} />
+                <div className="cp-row">
+                  <FormField label="Current Weight" name="currentWeight" type="number" value={formData.currentWeight} onChange={handleChange} />
+                  <FormField label="Target Weight" name="targetWeight" type="number" value={formData.targetWeight} onChange={handleChange} />
+                </div>
+                <div className="cp-field-group">
+                  <label className="cp-label">Allergies</label>
+                  <div className="pill-container">
+                    {['peanuts', 'dairy', 'gluten', 'soy', 'fish'].map(a => (
+                      <div key={a} className={`pill ${formData.allergies.includes(a) ? 'active' : ''}`} onClick={() => handleToggleArray('allergies', a)}>{a}</div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
-            <div className="cp-row">
-              <div className="cp-field-group">
-                <FormField
-                  label="Current Weight (kg)"
-                  id="currentWeight"
-                  type="number"
-                  name="currentWeight"
-                  value={formData.currentWeight}
-                  onChange={handleChange}
-                  placeholder="e.g. 85"
-                  min="30"
-                  max="300"
-                  />
-              </div>
-              <div className="cp-field-group">
-                <FormField
-                  label="Target Weight (kg)"
-                  id="targetWeight"
-                  type="number"
-                  name="targetWeight"
-                  value={formData.targetWeight}
-                  onChange={handleChange}
-                  placeholder="e.g. 75"
-                  min="30"
-                  max="300"
-                />
-              </div>
-            </div>
+            {/* CONDITIONAL RENDERING: NUTRITIONIST FIELDS */}
+            {isNutri && (
+              <>
+                <div className="cp-row">
+                  <FormField label="Years of Experience" name="yearsOfExperience" type="number" value={formData.yearsOfExperience} onChange={handleChange} />
+                  <FormField label="Price per Hour ($)" name="price" type="number" value={formData.price} onChange={handleChange} />
+                </div>
 
-            {/* Primary Goal Select */}
-            <div className="cp-field-group" style={{ marginBottom: '15px' }}>
-              <label className="cp-label" htmlFor="primaryGoal">Primary Goal</label>
-              <select
-                id="primaryGoal"
-                name="primaryGoal"
-                value={formData.primaryGoal}
-                onChange={handleChange}
-                className="cp-select"
-              >
-                <option value="" disabled>Select your main goal</option>
-                <option value="Weight Loss">Weight Loss</option>
-                <option value="Muscle Building">Muscle Building</option>
-                <option value="Clinical Nutrition">Clinical Nutrition</option>
-                <option value="Sports Nutrition">Sports Nutrition</option>
-                <option value="General Health">General Health</option>
-                <option value="Diabetic Diet">Diabetic Diet</option>
-                <option value="Pregnancy Nutrition">Pregnancy Nutrition</option>
-                <option value="Vegan Nutrition">Vegan Nutrition</option>
-              </select>
-            </div>
-
-            {/* Pill/Box Toggle for Allergies */}
-            <div className="cp-field-group" style={{ marginBottom: '20px' }}>
-              <label className="cp-label">Allergies</label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                <FormField label="Card Bio (Max 150 chars)" name="cardBio" value={formData.cardBio} onChange={handleChange} maxLength="150" />
                 
-                {['peanuts', 'tree nuts', 'dairy', 'eggs', 'soy', 'wheat', 'gluten', 'fish', 'shellfish', 'sesame'].map((allergy) => {
-                  const isSelected = formData.allergies?.includes(allergy);
-                  
-                  return (
-                    <div
-                      key={allergy}
-                      onClick={() => handleAllergyToggle(allergy)}
-                      style={{
-                        padding: '8px 16px',
-                        borderRadius: '8px',
-                        border: `2px solid ${isSelected ? '#10b981' : '#e5e7eb'}`,
-                        backgroundColor: isSelected ? '#d1fae5' : '#ffffff',
-                        color: isSelected ? '#065f46' : '#374151',
-                        cursor: 'pointer',
-                        fontWeight: '500',
-                        textTransform: 'capitalize',
-                        transition: 'all 0.2s ease',
-                        userSelect: 'none'
-                      }}
-                    >
-                      {allergy}
-                    </div>
-                  );
-                })}
+                <div className="cp-field-group">
+                  <label className="cp-label">Full Bio</label>
+                  <textarea name="bio" className="cp-textarea" value={formData.bio} onChange={handleChange} maxLength="500" />
+                </div>
 
-              </div>
-            </div>
+                <div className="cp-field-group">
+                  <label className="cp-label">Specializations</label>
+                  <div className="pill-container">
+                    {['Weight Loss', 'Muscle Building', 'Diabetic Diet', 'Sports Nutrition', 'General Health'].map(s => (
+                      <div key={s} className={`pill ${formData.specialization.includes(s) ? 'active' : ''}`} onClick={() => handleToggleArray('specialization', s)}>{s}</div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="cp-field-group">
+                  <label className="cp-label">Languages</label>
+                  <div className="pill-container">
+                    {['Arabic', 'English', 'Spanish', 'Portuguese', 'Russian'].map(l => (
+                      <div key={l} className={`pill ${formData.languages.includes(l) ? 'active' : ''}`} onClick={() => handleToggleArray('languages', l)}>{l}</div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="cp-actions">
-              <button
-                type="button"
-                className="cp-btn-cancel"
-                onClick={() => navigate("/profile")}
-              >
-                Cancel
-              </button>
-              <button type="submit" className="cp-btn" disabled={loading}>
-                {loading ? (
-                  <span className="cp-btn-loading">
-                    <span className="cp-spinner" /> Saving…
-                  </span>
-                ) : (
-                  "Save Changes"
-                )}
-              </button>
+              <button type="button" className="cp-btn-cancel" onClick={() => navigate(-1)}>Cancel</button>
+              <button type="submit" className="cp-btn" disabled={loading}>{loading ? "Saving..." : "Save Changes"}</button>
             </div>
-
           </form>
-
         </div>
       </div>
     </div>

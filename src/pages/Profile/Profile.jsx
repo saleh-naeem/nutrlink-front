@@ -1,6 +1,8 @@
 import { useEffect, useState, useContext, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { getCustomerProfile, updateProfilePicture } from "../../api/customerapi";
+import { useNavigate, useParams } from "react-router-dom";
+
+import { getCustomerProfile, getProfileById, updateProfilePicture } from "../../api/customerapi";
+
 import "./Profile.css";
 import Navbar from "../../component/Navigationbar/Navbar";
 import { AuthContext } from "../../AuthContext";
@@ -15,21 +17,32 @@ export const Profile = () => {
   const fileInputRef = useRef(null)
   const navigate = useNavigate();
 
+  const { userId } = useParams();
+
   useEffect(() => {
     let isMounted = true;
+
     async function fetchProfile() {
       try {
-        const response = await getCustomerProfile();
+        // If there's a :userId in the URL, fetch that customer's profile.
+        // Otherwise, fetch the logged-in customer's own profile.
+        const response = userId ? await getProfileById(userId) : await getCustomerProfile();
         if (isMounted) setData(response);
-      } catch (err) {
+      } catch {
         if (isMounted) setError("Could not connect to the server. Please check your connection.");
+
+
       } finally {
         if (isMounted) setLoading(false);
       }
     }
+
     fetchProfile();
-    return () => { isMounted = false };
-  }, []);
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
+
 
   const handleImageChange = async (e) => {
     // 1. Grab the physical file the user selected
@@ -83,7 +96,8 @@ export const Profile = () => {
   }
 
   // --- SAFE DATA EXTRACTION (Defensive Coding) ---
-  const { age = 0, gender = "N/A", height = 0, startingWeight = 0, currentWeight = 0, targetWeight = 0, allergies = [] } = data;
+  const { age = 0, height = 0, startingWeight = 0, currentWeight = 0, targetWeight = 0, allergies = [], primaryGoal } = data;
+
 
   const bmi = height > 0 ? (currentWeight / ((height / 100) ** 2)).toFixed(1) : "0.0";
 
@@ -185,6 +199,7 @@ export const Profile = () => {
                   <li><span className="spec-icon">📩</span> <strong>Email:</strong> {user?.email}</li>
                   <li><span className="spec-icon">🎂</span> <strong>Age:</strong> {age} yrs</li>
                   <li><span className="spec-icon">📏</span> <strong>Height:</strong> {height} cm</li>
+                  <li><span className="spec-icon">📏</span> <strong>Primary Goal:</strong> {primaryGoal}</li>
                 </ul>
               </div>
 
