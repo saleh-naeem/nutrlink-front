@@ -91,22 +91,44 @@ export const Updateprofile = () => {
     e.preventDefault();
     setLoading(true);
 
+    const payload = {};
+    
+    // Explicit list of fields we expect to be strict numbers
+    const numericFields = ["age", "height", "currentWeight", "targetWeight", "yearsOfExperience", "price"];
+
+    Object.entries(formData).forEach(([key, val]) => {
+      if (val !== "" && val !== null && val !== undefined) {
+        // Convert numeric values from strings to true numbers before hitting MongoDB
+        if (numericFields.includes(key)) {
+          payload[key] = parseFloat(val);
+        } else {
+          payload[key] = val;
+        }
+      }
+    });
+
+    if (Object.keys(payload).length === 0) {
+      showAlert("No Changes", "Please update at least one field.", "warning");
+      setLoading(false);
+      return;
+    }
+
     try {
       if (isNutri) {
         // Send nutritionist specific payload
         await nutritionistAPI.updateProfile({
-          specialization: formData.specialization,
-          bio: formData.bio,
-          cardBio: formData.cardBio,
-          yearsOfExperience: formData.yearsOfExperience,
-          languages: formData.languages,
-          price: formData.price,
-          age: formData.age,
-          gender: formData.gender
+          specialization: payload.specialization || [],
+          bio: payload.bio,
+          cardBio: payload.cardBio,
+          yearsOfExperience: payload.yearsOfExperience,
+          languages: payload.languages || [],
+          price: payload.price,
+          age: payload.age,
+          gender: payload.gender
         });
       } else {
         // Send customer specific payload
-        await customerAPI.updateCustomerProfile(formData);
+        await customerAPI.updateCustomerProfile(payload);
       }
 
       await showAlert("Success!", "Profile updated successfully.", "success");

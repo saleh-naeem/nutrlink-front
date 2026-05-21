@@ -15,25 +15,13 @@
     overflow-x: hidden;
 }
 
-.hero-sidebar::-webkit-scrollbar {
-    width: 4px;
-}
-
-/* Define the draggable handle */
-.hero-sidebar::-webkit-scrollbar-thumb {
-    background-color: #10b981;
-    border-radius: 10px;
-}
-
-/* Optional: Define the track background */
-.hero-sidebar::-webkit-scrollbar-track {
-    background: transparent;
-}
+.hero-sidebar::-webkit-scrollbar { width: 4px; }
+.hero-sidebar::-webkit-scrollbar-thumb { background-color: #10b981; border-radius: 10px; }
+.hero-sidebar::-webkit-scrollbar-track { background: transparent; }
 
 .my-appointments {
     position: sticky;
     font-style: italic;
-    margin: 30px 50px 20px;
     top: 0;
     z-index: 10;
     background-color: #f8fafc;
@@ -42,10 +30,7 @@
     width: 100%;
 }
 
-.hero-scroll-list {
-    width: 90%;
-    margin: auto;
-}
+.hero-scroll-list { width: 90%; margin: auto; }
 
 .hero-main-view {
     flex: 1;
@@ -65,7 +50,6 @@
     width: 1.5px;
     height: 95%;
     position: absolute;
-    top: 10%px;
     left: -20px;
     z-index: 20;
     background-color: #10b981;
@@ -88,33 +72,22 @@
     transition: .3s all ease;
     margin: 5px;
 }
-
 .details-overlay-absolute .exit-btn:hover {
     background-color: red;
     color: white;
-    border: .5px solid white
+    border: .5px solid white;
 }
 
 .details-overlay-absolute .profile-image-wrapper {
     width: 150px;
     height: 150px;
-    margin: 7px 0px 7px 8px;
     overflow: hidden;
     margin: auto;
     border-radius: 50%;
 }
+.details-overlay-absolute img { width: 100%; height: 100%; object-fit: cover; }
 
-.details-overlay-absolute img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.text-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
+.text-info { display: flex; flex-direction: column; gap: 1px; }
 
 .details-info .username {
     text-transform: capitalize;
@@ -122,7 +95,6 @@
     margin: auto;
     top: 5px;
 }
-
 .details-info .email {
     color: #444;
     font-size: 1rem;
@@ -130,7 +102,6 @@
     position: relative;
     top: 5px;
 }
-
 .details-info .devider {
     width: 90%;
     height: 2px;
@@ -143,7 +114,6 @@
     justify-content: space-between;
     padding: 0 22px;
 }
-
 .details-overlay-absolute .body-info .date-info,
 .time-info {
     color: #666;
@@ -157,6 +127,9 @@
     padding: 0 22px;
     margin-top: 100px;
     margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .cancel-appointment,
@@ -171,10 +144,17 @@
     cursor: pointer;
     transition: 0.3s all ease;
 }
-
 .cancel-appointment:hover, .delete-appointment:hover {
     background-color: #fff1f2;
-    border-color: #e11d48;}
+    border-color: #e11d48;
+}
+
+.footer-right-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
 
 .details-overlay-absolute .message,
 .details-overlay-absolute .see-profile {
@@ -188,36 +168,73 @@
     cursor: pointer;
     transition: 0.3s all ease;
 }
-
-.details-overlay-absolute .see-profile {
-    margin-left: 5px;
-}
-
-.message:hover,
-.see-profile:hover {
+.message:hover, .see-profile:hover {
     background-color: #10b981;
-    color: white
+    color: white;
 }
 
+/* ── Report button ─────────────────────────── */
+.report-appt-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
 
+    font-size: 0.9rem;
+    color: #e53e3e;
+    background: #fff5f5;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid #fca5a5;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s all ease;
 
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.report-appt-btn .report-text {
+    display: none;
+}
+
+.report-appt-btn:hover .report-text {
+    display: inline;
+}
+
+.report-appt-btn:hover {
+    background-color: #e53e3e;
+    color: white;
+    border-color: #e53e3e;
+}
+.report-appt-btn:hover {
+    background-color: #e53e3e;
+    color: white;
+    border-color: #e53e3e;
+}
+
+/* ── Empty state ───────────────────────────── */
 .hero-main-view .no-result-container {
     height: 500px;
     display: flex;
     align-items: center;
 }
-
 .hero-main-view .no-result {
     font-size: 1.2rem;
     font-style: italic;
     color: #666;
-    /* font-weight: 600; */
 }
 
-/* --- SweetAlert2 Custom Button Styles --- */
+.no-appointments-sidebar {
+    text-align: center;
+    color: #aaa;
+    font-style: italic;
+    padding: 40px 20px;
+}
 
+/* ── SweetAlert2 custom buttons ────────────── */
 .swal-btn-destructive {
-    background-color: #d33 !important; /* Red */
+    background-color: #d33 !important;
     color: white !important;
     padding: 10px 24px;
     border-radius: 6px;
@@ -227,9 +244,8 @@
     cursor: pointer;
     transition: transform 0.1s ease;
 }
-
 .swal-btn-brand {
-    background-color: #00C853 !important; /* Your Brand Green */
+    background-color: #00C853 !important;
     color: white !important;
     padding: 10px 24px;
     border-radius: 6px;
@@ -239,9 +255,8 @@
     cursor: pointer;
     transition: transform 0.1s ease;
 }
-
 .swal-btn-cancel {
-    background-color: #757575 !important; /* Neutral Grey */
+    background-color: #757575 !important;
     color: white !important;
     padding: 10px 24px;
     border-radius: 6px;
@@ -250,9 +265,58 @@
     font-weight: 600;
     cursor: pointer;
 }
-
-/* Hover effects to make them feel interactive */
-.swal-btn-destructive:hover, .swal-btn-brand:hover, .swal-btn-cancel:hover {
+.swal-btn-destructive:hover,
+.swal-btn-brand:hover,
+.swal-btn-cancel:hover {
     filter: brightness(0.9);
     transform: scale(1.02);
+}
+.details-overlay-absolute {
+    background-color: #ffffff;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    position: relative;
+}
+
+.report-appt-btn {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+
+    width: 38px;
+    height: 38px;
+    padding: 0;
+
+    font-size: 1rem;
+    color: #e53e3e;
+    background: #fff5f5;
+    border: 1px solid #fca5a5;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s all ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.report-text {
+    display: none;
+}
+
+.report-appt-btn:hover {
+    width: 105px;
+    background-color: #e53e3e;
+    color: white;
+    border-color: #e53e3e;
+}
+
+.report-appt-btn:hover .report-text {
+    display: inline;
 }
