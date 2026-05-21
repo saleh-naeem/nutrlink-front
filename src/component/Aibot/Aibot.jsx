@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { createmessage, createChat, getchat, getmessages  } from "../../api/ai"; // adjust path as needed
 import "./Aibot.css";
+import { useNavigate } from "react-router-dom";
+
 
 export const Aibot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +12,7 @@ export const Aibot = () => {
   const [loading, setLoading] = useState(false);
   const [chatId, setChatId] = useState(null);
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -88,7 +91,7 @@ if (!currentChatId) {
       {isOpen && (
         <div className="aibot-panel">
           {/* Header */}
-          <div className="aibot-header">
+<div className="aibot-header" onClick={() => navigate("/ai")} style={{ cursor: "pointer" }}>
             <div className="aibot-header-left">
               <div className="aibot-avatar">🥗</div>
               <div>
@@ -96,8 +99,12 @@ if (!currentChatId) {
                 <p>Your nutrition assistant</p>
               </div>
             </div>
-            <button className="aibot-close" onClick={() => setIsOpen(false)}>✕</button>
-          </div>
+<button 
+  className="aibot-close" 
+  onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
+>
+  ✕
+</button>          </div>
 
           {/* Messages */}
           <div className="aibot-messages">
