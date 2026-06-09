@@ -1,15 +1,16 @@
 # NutriLink 🥗
 
-A comprehensive nutrition and wellness platform connecting clients with certified nutritionists through personalized consultations, meal planning, and AI-powered nutrition guidance.
+A comprehensive nutrition and wellness platform connecting clients with certified nutritionists through personalized consultations, meal planning, real-time chat, video calls, safety reports, and AI-powered nutrition guidance.
 
 ![NutriLink Banner](https://img.shields.io/badge/NutriLink-Nutrition%20Platform-green)
-![React](https://img.shields.io/badge/React-18+-blue)
+![React](https://img.shields.io/badge/React-19+-blue)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
+- [Communication & Safety Features](#communication--safety-features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
@@ -26,9 +27,10 @@ A comprehensive nutrition and wellness platform connecting clients with certifie
 NutriLink is a modern web application that bridges the gap between health-conscious individuals and professional nutritionists. The platform offers personalized nutrition consultations, AI-powered dietary advice, progress tracking, and comprehensive health management tools.
 
 **System Architecture**:
-- **Frontend**: React 18+ (this repository)
+- **Frontend**: React 19+ (this repository)
 - **Backend**: Node.js + Express + MongoDB ([Backend README](https://github.com/saleh-naeem/nutrlink/blob/main/README.md))
 - **AI**: OpenAI GPT-4.1-mini integration
+- **Real-time**: Socket.IO + WebRTC for chat notifications and video consultations
 - **Storage**: Cloudinary for images
 
 ### Why NutriLink?
@@ -79,6 +81,11 @@ nutrilink/
 - **BMI & Calorie Calculator**: Calculate BMI, BMR, TDEE, and daily calorie targets
 - **Weight Journey Tracking**: Monitor progress towards weight goals
 - **Nutritionist Booking**: Browse and book sessions with certified nutritionists
+- **Real-Time Chat**: Message nutritionists with unread counters, typing states, and chat history
+- **Video Consultations**: Join booked sessions through protected WebRTC video rooms
+- **Diet Plan Tracking**: View assigned meal plans and mark meals as completed
+- **Report System**: Submit safety reports for inappropriate or unprofessional behavior
+- **Reviews & Ratings**: Review nutritionists after completed work
 - **AI Nutrition Assistant**: 24/7 access to AI-powered dietary guidance
 - **Personalized Dashboard**: View appointments, progress, and recommendations
 
@@ -87,12 +94,17 @@ nutrilink/
 - **Client Management Dashboard**: Track appointments and client progress
 - **Schedule Management**: Set availability and manage booking slots
 - **Appointment Tracking**: Mark sessions as completed or cancelled
+- **Video Sessions**: Start live consultations from booked appointments and mark completed calls
+- **Client Messaging**: Continue conversations with customers through real-time chat
+- **Diet Plan Builder**: Create and manage personalized plans with meals, macros, and progress
+- **Client Progress View**: Review customer weight, water, exercise, and goal summaries
 - **Multi-language Support**: Serve clients in multiple languages
 - **Custom Pricing**: Set your own consultation rates
 
 ### 🔧 Admin Features
 - **User Management**: Review and approve nutritionist applications
 - **Credential Verification**: Review uploaded certificates and credentials
+- **Report Moderation**: View user reports, mark them resolved, or delete invalid reports
 - **Platform Oversight**: Monitor user activity and platform health
 
 ### 🤖 AI-Powered Features
@@ -100,6 +112,13 @@ nutrilink/
 - **Context-Aware Responses**: AI remembers conversation history
 - **Markdown-Formatted Replies**: Rich, formatted responses for better readability
 - **Multi-Chat Support**: Create and manage multiple conversation threads
+
+### Communication & Safety Features
+- **User-to-User Chat**: One-to-one conversations between customers and nutritionists
+- **Online Status & Unread Badges**: Socket.IO updates for active users and message notifications
+- **WebRTC Video Calls**: Camera, microphone, screen sharing, device settings, and room validation
+- **Safety Reporting**: Customer report modal with reason selection, descriptions, and admin review
+- **Review System**: Nutritionist cards display ratings and review counts
 
 ### 📊 Health Tools
 - **Advanced Calorie Calculator**:
@@ -112,14 +131,19 @@ nutrilink/
 ## 🛠 Tech Stack
 
 ### Frontend
-- **React 18+**: Modern React with hooks and functional components
-- **React Router v6**: Client-side routing with protected routes
+- **React 19+**: Modern React with hooks and functional components
+- **React Router v7**: Client-side routing with protected routes
+- **Axios + Fetch API**: HTTP clients for REST API integration
+- **Socket.IO Client**: Real-time chat, online users, and notification updates
+- **WebRTC APIs**: Browser-based video calls with camera, microphone, and screen sharing
+- **Lucide React**: Icon system for video call and UI controls
 - **React Markdown**: Rich text formatting for AI responses
 - **CSS3**: Custom styling with modern CSS features
 - **Google OAuth**: Third-party authentication
 
 ### State Management
 - React Hooks (useState, useEffect, useRef)
+- AuthContext and SocketContext providers
 - JWT token management
 - Local storage for persistence
 
@@ -156,6 +180,11 @@ nutrilink/
 │   │   ├── Nutriupdateprofile.jsx # Nutritionist profile update
 │   │   ├── Calculator.jsx     # Calorie & BMI calculator
 │   │   ├── Aifull.jsx         # Full AI chat interface
+│   │   ├── Chat.jsx           # User-to-user chat page
+│   │   ├── VideoCall.jsx      # WebRTC consultation room
+│   │   ├── Appointments.jsx   # Appointment overview and actions
+│   │   ├── Nutritionists.jsx  # Search, filter, and book nutritionists
+│   │   ├── Customerdietpage.jsx # Customer meal plan tracking
 │   │   └── NutritionistAppointments.jsx # Appointment management
 │   │
 │   ├── component/             # Reusable components
@@ -168,6 +197,9 @@ nutrilink/
 │   │   ├── RoleRoute.jsx      # Role-based route protection
 │   │   ├── Aibot.jsx          # Floating AI chatbot
 │   │   ├── Bookingmodal.jsx   # Appointment booking modal
+│   │   ├── Chat/              # Chat sidebar, messages, and input
+│   │   ├── Report.jsx         # Customer report modal
+│   │   ├── Joincallbutton.jsx # Session video call launcher
 │   │   └── Icons.jsx          # SVG icon components
 │   │
 │   ├── api/                   # API service functions
@@ -175,8 +207,11 @@ nutrilink/
 │   │   ├── customerapi.js     # Customer-specific APIs
 │   │   ├── nutritionist.js    # Nutritionist-specific APIs
 │   │   ├── ai.jsx             # AI chatbot APIs
-│   │   ├── appointment.jsx    # Appointment management APIs
-│   │   └── dite.jsx           # Diet/meal plan APIs
+│   │   ├── chatapi.jsx        # Real-time chat APIs
+│   │   ├── appointmetapi.jsx  # Appointment management APIs
+│   │   ├── diet.jsx           # Diet/meal plan APIs
+│   │   ├── progressApi.js     # Progress dashboard APIs
+│   │   └── report.jsx         # Safety report APIs
 │   │
 │   ├── styles/                # Global styles
 │   │   ├── global.css         # Global CSS variables and resets
@@ -190,6 +225,8 @@ nutrilink/
 │   │   ├── AuthCard.css       # Auth card styles
 │   │   └── BookingModal.css   # Booking modal styles
 │   │
+│   ├── SocketContext.jsx      # Socket.IO provider and unread badge state
+│   ├── AuthContext.jsx        # Authentication provider
 │   ├── App.jsx                # Main app component with routing
 │   └── main.jsx               # Application entry point
 │
@@ -252,6 +289,11 @@ nutrilink/
 - Use calorie calculator
 - Browse and book nutritionists
 - Track weight journey
+- Message nutritionists in real time
+- Join video consultations for booked sessions
+- View and complete assigned meal plans
+- Report nutritionists when safety or conduct issues occur
+- Leave reviews after completed care
 - Chat with AI assistant
 - View appointment history
 
@@ -263,6 +305,9 @@ nutrilink/
 - Manage appointment schedule
 - Track client appointments
 - Mark sessions as completed
+- Join video consultations
+- Chat with customers
+- Create diet plans and monitor client progress
 - View earnings and statistics
 
 ### 3. Admin
@@ -271,6 +316,7 @@ nutrilink/
 - Review nutritionist applications
 - Verify uploaded credentials
 - Approve/reject registrations
+- Review and resolve user reports
 - Manage platform users
 - Monitor platform activity
 
@@ -371,6 +417,41 @@ Target = TDEE + Goal Adjustment
 8. Both parties receive confirmation
 ```
 
+### Real-Time Chat Flow
+
+```javascript
+// User Chat Flow
+1. Customer or nutritionist opens /chat
+2. Fetch conversations and unread counts
+3. Access an existing conversation or create a "ghost" chat from appointments
+4. Send messages through REST API
+5. Broadcast new messages, typing, deletes, and sidebar updates through Socket.IO
+6. Mark messages as seen when the conversation is opened
+```
+
+### Video Consultation Flow
+
+```javascript
+// Video Call Flow
+1. Appointment must be booked and the session time must be live
+2. Participant joins /video-call/:appointmentId
+3. Backend validates the appointment and room participants
+4. Socket.IO exchanges WebRTC offer, answer, and ICE candidates
+5. Users can mute, disable camera, share screen, and switch devices
+6. Nutritionist can mark the appointment completed after ending the call
+```
+
+### Report Workflow
+
+```javascript
+// Report Flow
+1. Customer opens report modal from an appointment
+2. Select reason and add description
+3. Submit report to the backend
+4. Admin reviews pending reports
+5. Admin marks report resolved or deletes invalid reports
+```
+
 ## 🔌 API Integration
 
 All API calls are made to the backend server running at `http://localhost:5000`.
@@ -450,6 +531,19 @@ Body: { date, time, duration }
 GET /appointments/schedule?status=<pending|completed|cancelled>
 Headers: { Authorization: Bearer <token> }
 
+// Book Appointment
+PUT /appointments/book/:slotId
+Headers: { Authorization: Bearer <token> }
+
+// Get Customer Appointments
+GET /appointments/customer-appointments
+Headers: { Authorization: Bearer <token> }
+
+// Reschedule Appointment
+PUT /appointments/reschedule
+Headers: { Authorization: Bearer <token> }
+Body: { appointmentId, newDate, newTime }
+
 // Mark Appointment as Completed
 PUT /appointments/complete/:id
 Headers: { Authorization: Bearer <token> }
@@ -460,6 +554,36 @@ Headers: { Authorization: Bearer <token> }
 
 // Delete Slot
 DELETE /appointments/slot/:slotId
+Headers: { Authorization: Bearer <token> }
+```
+
+### User Chat Endpoints
+
+```javascript
+// Access Conversation
+POST /chat
+Headers: { Authorization: Bearer <token> }
+Body: { userId }
+Response: { _id, participants, lastMessage, isGhost? }
+
+// Send Message
+POST /chat/send
+Headers: { Authorization: Bearer <token> }
+Body: { recipientId, text, conversationId? }
+Response: { newMessage, conversationId }
+
+// Get Conversations
+GET /chat/conversations
+Headers: { Authorization: Bearer <token> }
+Response: [{ _id, participants, lastMessage, unreadCount }]
+
+// Get Messages
+GET /chat/messages/:conversationId
+Headers: { Authorization: Bearer <token> }
+Response: [{ _id, sender, text, seen, createdAt }]
+
+// Delete Message
+DELETE /chat/messages/:messageId
 Headers: { Authorization: Bearer <token> }
 ```
 
@@ -491,6 +615,40 @@ Response: [{ role, content, timestamp }]
 // Delete Chat
 DELETE /AI/chat/:chatId
 Headers: { Authorization: Bearer <token> }
+```
+
+### Report Endpoints
+
+```javascript
+// Create Report
+POST /reports
+Headers: { Authorization: Bearer <token> }
+Body: { reporterId, reporterModel, reportedUserId, reportedUserModel, reason, description }
+
+// Get Reports (Admin)
+GET /reports
+Headers: { Authorization: Bearer <admin_token> }
+
+// Update Report Status (Admin)
+PUT /reports/:id
+Headers: { Authorization: Bearer <admin_token> }
+Body: { status: "pending" | "reviewed" | "resolved" }
+
+// Delete Report (Admin)
+DELETE /reports/:id
+Headers: { Authorization: Bearer <admin_token> }
+```
+
+### Review Endpoints
+
+```javascript
+// Get Nutritionist Reviews
+GET /reviews/:nutritionistId
+
+// Add Review
+POST /reviews/:nutritionistId
+Headers: { Authorization: Bearer <token> }
+Body: { rating, comment }
 ```
 
 ## 🔐 Environment Variables
@@ -624,6 +782,9 @@ const [loading, setLoading] = useState(false);
    - Nutritionist Dashboard (`/Ndashboard`)
    - Profile (`/profile`, `/Nprofile`)
    - AI Chat (`/Ai`)
+   - User Chat (`/chat`)
+   - Video Call (`/video-call/:appointmentId`)
+   - Appointments (`/appointments`)
 
 3. **Admin Routes**: Admin-only access
    - Admin Dashboard (`/admin`)
@@ -631,6 +792,8 @@ const [loading, setLoading] = useState(false);
 4. **Role Routes**: Role-specific access
    - Customer Profile (`/profile`) - Customers only
    - Nutritionist Profile (`/Nprofile`) - Nutritionists only
+   - Customer Diet Plan (`/CustomerDietPlan`) - Customers only
+   - Nutritionist Diet Plan (`/NutritionistDietPlan`) - Nutritionists only
 
 ### Implementation Example
 
@@ -673,6 +836,11 @@ const ProtectedRoute = ({ children }) => {
 - [ ] Calculate BMI and calories
 - [ ] Browse nutritionists
 - [ ] Book appointment
+- [ ] Start or continue user chat with nutritionist
+- [ ] Join live video call for a booked appointment
+- [ ] Submit a report from appointment details
+- [ ] View diet plan and mark meals complete
+- [ ] Add a nutritionist review
 - [ ] Chat with AI bot
 
 **Nutritionist Features**
@@ -682,11 +850,15 @@ const ProtectedRoute = ({ children }) => {
 - [ ] View appointments
 - [ ] Mark appointments complete
 - [ ] Cancel appointments
+- [ ] Create and update diet plans
+- [ ] Message customers in real time
+- [ ] Join video consultation
 
 **Admin Features**
 - [ ] Access admin dashboard
 - [ ] Review nutritionist applications
 - [ ] Approve/reject registrations
+- [ ] Review, resolve, and delete reports
 
 ## 🛣 Roadmap
 
@@ -696,14 +868,16 @@ const ProtectedRoute = ({ children }) => {
 - ✅ Calorie calculator
 - ✅ AI chatbot
 - ✅ Booking system
+- ✅ Real-time user chat
+- ✅ Video consultation feature
+- ✅ Report moderation workflow
+- ✅ Nutritionist reviews and ratings
 
-### Phase 2 
+### Phase 2
 - ✅ Meal plan generator
 - ✅ Progress tracking charts
-- ✅ Payment integration
-- ✅ Email notifications
-- ✅ Video consultation feature
-.
+- ⏳ Payment integration
+- ⏳ Email notifications
 
 
 ---
