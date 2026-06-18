@@ -313,3 +313,10 @@
   height: 18px;
   color: white;
 }
+.aibot-header {
+  /* existing styles... */
+  transition: filter 0.2s ease;
+}
+.aibot-header:hover {
+  filter: brightness(1.08);
+}
