@@ -90,7 +90,7 @@ export const Profile = () => {
 
   // --- SAFE DATA EXTRACTION (Defensive Coding) ---
 
-  const { age = 0, gender = "N/A", height = 0, currentWeight = 0, targetWeight = 0, allergies = [] } = data;
+  const { age = 0, gender = "N/A", height = 0, currentWeight = 0, targetWeight = 0, allergies = [], primaryGoal = "Not Set" } = data;
 
   // 🟢 THE ENDPOINT FIX: Fallback to currentWeight if startingWeight is missing or 0 in DB
   const startingWeight = data.startingWeight || currentWeight;

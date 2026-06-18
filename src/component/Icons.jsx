@@ -45,27 +45,27 @@ export const EyeOffIcon = () => (
 );
 
 export const NutrlinkLogo = ({ size = 32, color = "#00c853" }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     {/* Left Pillar */}
     <rect x="5" y="5" width="3" height="14" rx="1.5" fill={color} />
-    
+
     {/* The 'Link' Diagonal - Stylized leaf shape */}
-    <path 
-      d="M8 7L16 17" 
-      stroke={color} 
-      strokeWidth="3.5" 
-      strokeLinecap="round" 
+    <path
+      d="M8 7L16 17"
+      stroke={color}
+      strokeWidth="3.5"
+      strokeLinecap="round"
     />
-    
+
     {/* Right Pillar with a 'Node' (Representing the AI Connection) */}
     <rect x="16" y="5" width="3" height="14" rx="1.5" fill={color} />
-    
+
     {/* The AI Spark/Node */}
     <circle cx="17.5" cy="5" r="3" fill={color} fillOpacity="0.3" />
     <circle cx="17.5" cy="5" r="1.5" fill={color} />

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../component/Navigationbar/Navbar";
 import { createProfile } from "../../api/nutritionist";
-import "./NutriProfile.css";
 
 const SPECIALIZATIONS = [
   "Weight Loss",
@@ -50,7 +49,7 @@ export const NutriCreateProfile = () => {
     /* ── Convert number fields from string to number ── */
     const payload = {
       ...formData,
-      price:             formData.price             !== "" ? Number(formData.price)             : undefined,
+      price: formData.price !== "" ? Number(formData.price) : undefined,
       yearsOfExperience: formData.yearsOfExperience !== "" ? Number(formData.yearsOfExperience) : undefined,
     };
 
@@ -66,69 +65,80 @@ export const NutriCreateProfile = () => {
   };
 
   return (
-    <div className="np-page">
-      <div className="np-wrapper">
-        <div className="np-card">
-
-          <div className="np-header">
-            <div className="np-icon">🥗</div>
-            <h1 className="np-title">Create Your Profile</h1>
-            <p className="np-subtitle">Set up your nutritionist profile to start helping clients</p>
+    <div className="min-h-screen bg-green-50 font-sans text-gray-900 pb-20">
+      <Navbar />
+      <div className="w-full max-w-2xl mx-auto pt-12 px-4 sm:px-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
+          
+          <div className="text-center mb-8">
+            <div className="text-5xl mb-4">🥗</div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Your Profile</h1>
+            <p className="text-gray-500">Set up your nutritionist profile to start helping clients</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="np-form">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
             {/* Specialization */}
-            <div className="np-field">
-              <label className="np-label">
-                Specialization <span className="np-required">*</span>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700 flex justify-between items-center">
+                <span>Specialization <span className="text-red-500">*</span></span>
+                <span className="text-xs text-gray-400 font-normal">Select all that apply</span>
               </label>
-              <p className="np-hint">Select all that apply</p>
-              <div className="np-checkbox-grid">
-                {SPECIALIZATIONS.map((s) => (
-                  <label
-                    key={s}
-                    className={`np-checkbox-item ${formData.specialization.includes(s) ? "np-checkbox-item--active" : ""}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.specialization.includes(s)}
-                      onChange={() => toggleItem("specialization", s)}
-                    />
-                    {s}
-                  </label>
-                ))}
+              <div className="flex flex-wrap gap-2 mt-1">
+                {SPECIALIZATIONS.map((s) => {
+                  const isActive = formData.specialization.includes(s);
+                  return (
+                    <label
+                      key={s}
+                      className={`inline-flex items-center justify-center px-4 py-2 border rounded-full text-sm font-medium cursor-pointer transition-all duration-200 select-none
+                        ${isActive ? "bg-green-100 border-green-500 text-green-700" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"}`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={isActive}
+                        onChange={() => toggleItem("specialization", s)}
+                      />
+                      {s}
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
             {/* Languages */}
-            <div className="np-field">
-              <label className="np-label">Languages</label>
-              <div className="np-checkbox-grid">
-                {LANGUAGES.map((l) => (
-                  <label
-                    key={l}
-                    className={`np-checkbox-item ${formData.languages.includes(l) ? "np-checkbox-item--active" : ""}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.languages.includes(l)}
-                      onChange={() => toggleItem("languages", l)}
-                    />
-                    {l}
-                  </label>
-                ))}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700">Languages</label>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {LANGUAGES.map((l) => {
+                  const isActive = formData.languages.includes(l);
+                  return (
+                    <label
+                      key={l}
+                      className={`inline-flex items-center justify-center px-4 py-2 border rounded-full text-sm font-medium cursor-pointer transition-all duration-200 select-none
+                        ${isActive ? "bg-green-100 border-green-500 text-green-700" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"}`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={isActive}
+                        onChange={() => toggleItem("languages", l)}
+                      />
+                      {l}
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
             {/* Years of experience + Price */}
-            <div className="np-row">
-              <div className="np-field">
-                <label className="np-label" htmlFor="yearsOfExperience">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-700" htmlFor="yearsOfExperience">
                   Years of Experience
                 </label>
                 <input
-                  className="np-input"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-colors"
                   id="yearsOfExperience"
                   name="yearsOfExperience"
                   type="number"
@@ -138,12 +148,12 @@ export const NutriCreateProfile = () => {
                   placeholder="e.g. 5"
                 />
               </div>
-              <div className="np-field">
-                <label className="np-label" htmlFor="price">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-700" htmlFor="price">
                   Price ($/hr)
                 </label>
                 <input
-                  className="np-input"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-colors"
                   id="price"
                   name="price"
                   type="number"
@@ -157,12 +167,13 @@ export const NutriCreateProfile = () => {
             </div>
 
             {/* Card Bio */}
-            <div className="np-field">
-              <label className="np-label" htmlFor="cardBio">
-                Short Bio <span className="np-char-count">{formData.cardBio.length}/150</span>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700 flex justify-between items-center" htmlFor="cardBio">
+                Short Bio
+                <span className="text-xs text-gray-400 font-normal">{formData.cardBio.length}/150</span>
               </label>
               <input
-                className="np-input"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-colors"
                 id="cardBio"
                 name="cardBio"
                 type="text"
@@ -174,12 +185,13 @@ export const NutriCreateProfile = () => {
             </div>
 
             {/* Full Bio */}
-            <div className="np-field">
-              <label className="np-label" htmlFor="bio">
-                Full Bio <span className="np-char-count">{formData.bio.length}/500</span>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700 flex justify-between items-center" htmlFor="bio">
+                Full Bio
+                <span className="text-xs text-gray-400 font-normal">{formData.bio.length}/500</span>
               </label>
               <textarea
-                className="np-textarea"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-colors resize-y"
                 id="bio"
                 name="bio"
                 maxLength={500}
@@ -191,10 +203,18 @@ export const NutriCreateProfile = () => {
             </div>
 
             {/* Submit */}
-            <button type="submit" className="np-btn" disabled={loading}>
-              {loading
-                ? <span className="np-btn-loading"><span className="np-spinner" /> Saving…</span>
-                : "Create Profile"}
+            <button
+              type="submit"
+              className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving…
+                </span>
+              ) : (
+                "Create Profile"
+              )}
             </button>
 
           </form>

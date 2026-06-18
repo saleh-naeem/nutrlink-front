@@ -4,6 +4,7 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../AuthContext";
 import { showAlert } from "../../utils/alertService";
+import "../CreateProfile/CreateProfile.css";
 
 // Import both APIs with aliases to avoid naming conflicts
 import * as customerAPI from "../../api/customerapi";
