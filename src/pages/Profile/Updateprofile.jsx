@@ -41,8 +41,8 @@ export const Updateprofile = () => {
     async function loadData() {
       try {
         // Use correct API based on role
-        const p = isNutri 
-          ? await nutritionistAPI.getProfile() 
+        const p = isNutri
+          ? await nutritionistAPI.getProfile()
           : await customerAPI.getCustomerProfile();
 
         if (p) {
@@ -92,7 +92,7 @@ export const Updateprofile = () => {
     setLoading(true);
 
     const payload = {};
-    
+
     // Explicit list of fields we expect to be strict numbers
     const numericFields = ["age", "height", "currentWeight", "targetWeight", "yearsOfExperience", "price"];
 
@@ -193,7 +193,7 @@ export const Updateprofile = () => {
                 </div>
 
                 <FormField label="Card Bio (Max 150 chars)" name="cardBio" value={formData.cardBio} onChange={handleChange} maxLength="150" />
-                
+
                 <div className="cp-field-group">
                   <label className="cp-label">Full Bio</label>
                   <textarea name="bio" className="cp-textarea" value={formData.bio} onChange={handleChange} maxLength="500" />
