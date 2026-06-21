@@ -100,7 +100,7 @@ export default function NutritionistDietPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
-    const [activeTab, setActiveTab] = useState("dashboard"); // Default to Dashboard tab!
+    const [activeTab, setActiveTab] = useState("dashboard"); 
     const [showCreateDiet, setShowCreateDiet] = useState(false);
     const [showMealModal, setShowMealModal] = useState(false);
     const [showExModal, setShowExModal] = useState(false);
@@ -110,12 +110,11 @@ export default function NutritionistDietPage() {
     const [exForm, setExForm] = useState(emptyExercise());
     const [dietForm, setDietForm] = useState({ startDate: "", endDate: "" });
 
-    useEffect(() => {
+    const fetchCustomers = useCallback(() => {
         if (user?.role !== 'nutritionist') {
             setLoading(false);
             return;
         }
-
         getNutritionistCustomers()
             .then(data => {
                 const clientList = Array.isArray(data) ? data : (data.customers || []);
@@ -128,20 +127,35 @@ export default function NutritionistDietPage() {
                     profilePic: client.user?.profilePic
                 }));
                 setCustomers(normalizedClients);
+
+                if (selected) {
+                    const currentUpdated = normalizedClients.find(c => c.userId === selected.userId);
+                    if (currentUpdated) setSelected(currentUpdated);
+                }
             })
             .catch(() => setError("Failed to load customers"))
             .finally(() => setLoading(false));
+    }, [user, selected]);
+
+    useEffect(() => {
+        fetchCustomers();
     }, [user]);
 
     const loadDiet = useCallback(async (customer) => {
         if (!customer.existingDiet) { setDiet(null); return; }
         try {
             const r = await getDiets();
-            const found = r.diets?.find(d =>
+            const customerDiets = r.diets?.filter(d => 
                 d.customerId?._id === customer.customerProfileId ||
                 d._id === customer.existingDiet._id
-            );
-            setDiet(found || null);
+            ) || [];
+            
+            if (customerDiets.length > 0) {
+                customerDiets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                setDiet(customerDiets[0]);
+            } else {
+                setDiet(null);
+            }
         } catch { setDiet(null); }
     }, []);
 
@@ -149,6 +163,21 @@ export default function NutritionistDietPage() {
 
     const handleCreateDiet = async () => {
         if (!dietForm.startDate || !dietForm.endDate) return setError("Fill in both dates.");
+        
+        // 🛠 DATE VALIDATION FIX: Lock date configurations out of historical parameters
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const start = new Date(dietForm.startDate);
+        const end = new Date(dietForm.endDate);
+
+        if (start < today) {
+            return setError("Meal date must be within the diet plan duration");
+        }
+        if (end < start) {
+            return setError("End date must be after the start date.");
+        }
+
         setSaving(true);
         try {
             const r = await createDiet({
@@ -158,14 +187,10 @@ export default function NutritionistDietPage() {
                 meals: []
             });
             setDiet(r.diet);
-            setCustomers(prev => prev.map(c =>
-                c.userId === selected.userId
-                    ? { ...c, existingDiet: { _id: r.diet._id, status: "pending", progress: 0 } }
-                    : c
-            ));
-            setSelected(prev => ({ ...prev, existingDiet: { _id: r.diet._id, status: "pending", progress: 0 } }));
+            
             setShowCreateDiet(false);
             setDietForm({ startDate: "", endDate: "" });
+            fetchCustomers();
         } catch (e) { setError(e.message || "Failed to create diet plan"); }
         finally { setSaving(false); }
     };
@@ -183,7 +208,12 @@ export default function NutritionistDietPage() {
                 setDiet(prev => ({ ...prev, meals: prev.meals.map(m => m._id === editingMeal ? r.meal : m) }));
             } else {
                 const r = await addMealToDiet(diet._id, mealForm);
-                setDiet(prev => ({ ...prev, meals: [...(prev.meals || []), r.meal] }));
+                setDiet(prev => ({ 
+                    ...prev, 
+                    meals: [...(prev.meals || []), r.meal],
+                    startDate: r.startDate || prev.startDate,
+                    endDate: r.endDate || prev.endDate 
+                }));
             }
             setShowMealModal(false);
         } catch (e) { setError(e.message || "Failed to save meal"); }
@@ -266,32 +296,35 @@ export default function NutritionistDietPage() {
                         <div className="ndp-client-header">
                             <div className="ndp-client-avatar">{selected.username?.slice(0, 2).toUpperCase()}</div>
                             <div><h2>{selected.username}</h2><span>{selected.email}</span></div>
-                            {!diet && (
+                            
+                            {!diet ? (
                                 <button className="ndp-btn ndp-btn-primary ndp-ml-auto" onClick={() => setShowCreateDiet(true)}>
                                     + Create Diet Plan
                                 </button>
-                            )}
-                            {diet && (
-                                <div className="ndp-diet-status ndp-ml-auto">
-                                    <span className={`ndp-status-badge status-${diet.status?.replace(" ", "-")}`}>{diet.status}</span>
-                                    <div className="ndp-progress-bar">
-                                        <div className="ndp-progress-fill" style={{ width: `${diet.progress || 0}%` }} />
+                            ) : (
+                                <div className="ndp-client-header-actions ndp-ml-auto" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                    <button className="ndp-btn ndp-btn-ghost" onClick={() => setShowCreateDiet(true)}>
+                                        🔄 New Diet Plan
+                                    </button>
+                                    <div className="ndp-diet-status">
+                                        <span className={`ndp-status-badge status-${diet.status?.replace(" ", "-")}`}>{diet.status}</span>
+                                        <div className="ndp-progress-bar">
+                                            <div className="ndp-progress-fill" style={{ width: `${diet.progress || 0}%` }} />
+                                        </div>
+                                        <span className="ndp-progress-text">{diet.progress || 0}% complete</span>
                                     </div>
-                                    <span className="ndp-progress-text">{diet.progress || 0}% complete</span>
                                 </div>
                             )}
                         </div>
 
                         <CustomerProfile customer={selected} />
 
-                        {/* 🛠 TABS ARE ALWAYS VISIBLE NOW */}
                         <div className="ndp-tabs" style={{ marginTop: '20px' }}>
                             <button className={`ndp-tab ${activeTab === "dashboard" ? "active" : ""}`} onClick={() => setActiveTab("dashboard")}>📊 Dashboard</button>
                             <button className={`ndp-tab ${activeTab === "meals" ? "active" : ""}`} onClick={() => setActiveTab("meals")}>🍽 Meals</button>
                             <button className={`ndp-tab ${activeTab === "exercises" ? "active" : ""}`} onClick={() => setActiveTab("exercises")}>🏋️ Exercises</button>
                         </div>
 
-                        {/* DASHBOARD TAB (Always visible if client is selected) */}
                         {activeTab === "dashboard" && (
                             <div className="ndp-tab-content">
                                 <div className="ndp-customer-dashboard-view" style={{ minHeight: '400px', backgroundColor: '#fff', borderRadius: '12px', padding: '10px' }}>
@@ -300,7 +333,6 @@ export default function NutritionistDietPage() {
                             </div>
                         )}
 
-                        {/* MEALS & EXERCISES TABS (Only show if diet plan exists) */}
                         {(activeTab === "meals" || activeTab === "exercises") && (
                             diet ? (
                                 <>
@@ -414,7 +446,7 @@ export default function NutritionistDietPage() {
                 )}
             </main>
 
-            {/* Modals... */}
+            {/* Modals */}
             {showCreateDiet && (
                 <div className="ndp-modal-overlay" onClick={() => setShowCreateDiet(false)}>
                     <div className="ndp-modal" onClick={e => e.stopPropagation()}>

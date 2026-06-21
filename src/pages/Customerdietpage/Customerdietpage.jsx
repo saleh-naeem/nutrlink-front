@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // <-- Added import
+import { useNavigate } from "react-router-dom";
 import { getDiets, markMealAsDone } from "../../api/diet";
 import "./CustomerDietPage.css";
 import Navbar from '../../component/Navigationbar/Navbar';
@@ -104,20 +104,28 @@ function ExerciseCard({ exercise }) {
 }
 
 export default function CustomerDietPage() {
-    const navigate = useNavigate(); // <-- Initialize navigate
+    const navigate = useNavigate();
     
-    const [diet,         setDiet]       = useState(null);
-    const [loading,      setLoading]    = useState(true);
-    const [error,        setError]      = useState("");
-    const [needsProfile, setNeedsProfile] = useState(false); // <-- Track if profile is missing
-    const [activeTab,    setActiveTab]  = useState("meals");
-    const [activeDay,    setActiveDay]  = useState(null);
+    const [diet, setDiet] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [needsProfile, setNeedsProfile] = useState(false);
+    const [activeTab, setActiveTab] = useState("meals");
+    const [activeDay, setActiveDay] = useState(null);
 
     useEffect(() => {
         getDiets()
-            .then(r => setDiet(r.diets?.[0] || null))
+            .then(r => {
+                const customerDiets = r.diets || [];
+                if (customerDiets.length > 0) {
+                    // 🛠 SORT FIX: Order descending by creation date so the newest plan block is index [0]
+                    customerDiets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    setDiet(customerDiets[0]);
+                } else {
+                    setDiet(null);
+                }
+            })
             .catch(err => {
-                // <-- Check exactly what the backend said
                 if (err.message === "Customer profile not found.") {
                     setNeedsProfile(true);
                 } else {
@@ -162,7 +170,6 @@ export default function CustomerDietPage() {
         </div>
     );
     
-    // <-- INTERCEPT: Show the "Create Profile" button if they are missing a profile
     if (needsProfile) return (
         <div style={{ textAlign: 'center', padding: '100px 20px', fontFamily: 'sans-serif' }}>
             <h2 style={{ fontSize: '2rem', marginBottom: '15px', color: '#333' }}>⚠️ Profile Required</h2>
