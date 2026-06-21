@@ -26,7 +26,6 @@ export const Updateprofile = () => {
     targetWeight: "",
     allergies: [],
     primaryGoal: "",
-    // Nutritionist Only
     specialization: [],
     bio: "",
     cardBio: "",
@@ -181,6 +180,17 @@ export const Updateprofile = () => {
                       <div key={a} className={`pill ${formData.allergies.includes(a) ? 'active' : ''}`} onClick={() => handleToggleArray('allergies', a)}>{a}</div>
                     ))}
                   </div>
+                </div>
+                <div className="cp-field-group">
+                  <label className="cp-label">Primary Goal</label>
+                  <select name="primaryGoal" value={formData.primaryGoal} onChange={handleChange} className="cp-select">
+                    <option value="">Select Goal</option>
+                    <option value="Weight Loss">Weight Loss</option>
+                    <option value="Muscle Building">Muscle Building</option>
+                    <option value="Diabetic Diet">Diabetic Diet</option>
+                    <option value="Sports Nutrition">Sports Nutrition</option>
+                    <option value="General Health">General Health</option>
+                  </select>
                 </div>
               </>
             )}
